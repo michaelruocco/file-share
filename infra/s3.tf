@@ -4,7 +4,7 @@ resource "aws_s3_bucket" "file_share" {
   force_destroy = true
 
   tags = {
-    Project = "file-share"
+    Project     = "file-share"
     Environment = "dev"
   }
 }
@@ -30,7 +30,6 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "file_share" {
 
 resource "aws_s3_bucket_lifecycle_configuration" "file_expiry" {
   bucket = aws_s3_bucket.file_share.id
-
 
   rule {
     id     = "delete-old-files"
