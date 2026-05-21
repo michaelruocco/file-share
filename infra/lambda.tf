@@ -24,8 +24,25 @@ resource "aws_iam_role_policy_attachment" "lambda_basic_logs" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
-resource "aws_lambda_function" "hello_lambda" {
-  function_name = "file-share-hello"
+resource "aws_iam_role_policy" "s3_upload_policy" {
+  name = "s3-upload-policy"
+  role = aws_iam_role.lambda_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Action = [
+        "s3:PutObject",
+        "s3:GetObject"
+      ],
+      Resource = "${aws_s3_bucket.file_share.arn}/*"
+    }]
+  })
+}
+
+resource "aws_lambda_function" "upload_url_lambda" {
+  function_name = "file-share-upload"
   role          = aws_iam_role.lambda_role.arn
   handler       = "index.handler"
   runtime       = "nodejs22.x"
@@ -36,12 +53,18 @@ resource "aws_lambda_function" "hello_lambda" {
   timeout = 10
 
   depends_on = [aws_iam_role_policy_attachment.lambda_basic_logs]
+
+  environment {
+    variables = {
+        BUCKET_NAME = aws_s3_bucket.file_share.bucket
+    }
+  }
 }
 
 resource "aws_lambda_permission" "apigw" {
   statement_id  = "AllowAPIGatewayInvoke"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.hello_lambda.function_name
+  function_name = aws_lambda_function.upload_url_lambda.function_name
   principal     = "apigateway.amazonaws.com"
 
   source_arn = "${aws_apigatewayv2_api.http_api.execution_arn}/*/*"
