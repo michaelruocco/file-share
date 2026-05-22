@@ -1,12 +1,14 @@
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
 import { createUploadUrl } from "./upload";
 import { createDownloadUrl } from "./download";
+import { createMultipartUploadUrl } from "./multipart/start";
 
 type Handler = (body: any) => Promise<any>;
 
 const routes: Record<string, Handler> = {
   "POST /upload-urls": createUploadHandler,
   "POST /download-urls": createDownloadHandler,
+  "POST /multipart-uploads": createMultipartUploadHandler,
 };
 
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
@@ -16,7 +18,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
 
     const routeKey = `${event.requestContext.http.method} ${event.requestContext.http.path}`;
     const handler = routes[routeKey];
-    console.log(`found handler${handler} using route key ${routeKey}`);
+    console.log(`found handler ${handler} using route key ${routeKey}`);
 
     if (!handler) {
       return notFound();
@@ -35,6 +37,11 @@ async function createUploadHandler(body: any) {
 
 async function createDownloadHandler(body: any) {
   const result = await createDownloadUrl(body);
+  return toSuccessResponse(result);
+}
+
+async function createMultipartUploadHandler(body: any) {
+  const result = await createMultipartUploadUrl(body);
   return toSuccessResponse(result);
 }
 

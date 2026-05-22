@@ -48,6 +48,13 @@ resource "aws_apigatewayv2_route" "download_urls_route" {
   target = "integrations/${aws_apigatewayv2_integration.lambda_integration.id}"
 }
 
+resource "aws_apigatewayv2_route" "multipart_uploads_route" {
+  api_id    = aws_apigatewayv2_api.http_api.id
+  route_key = "POST /multipart-uploads"
+
+  target = "integrations/${aws_apigatewayv2_integration.lambda_integration.id}"
+}
+
 resource "aws_apigatewayv2_stage" "default" {
   api_id      = aws_apigatewayv2_api.http_api.id
   name        = "$default"

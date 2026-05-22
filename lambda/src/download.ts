@@ -1,8 +1,6 @@
-import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
+import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-
-const s3 = new S3Client({ region: process.env.AWS_REGION });
-const BUCKET = process.env.BUCKET_NAME!;
+import { s3, bucket } from "./s3";
 
 export async function createDownloadUrl(body: any) {
   const key = body.key;
@@ -11,14 +9,16 @@ export async function createDownloadUrl(body: any) {
     throw new Error("Missing key");
   }
 
-  const command = new GetObjectCommand({
-    Bucket: BUCKET,
-    Key: key,
-  });
+  const command = toGetObjectCommand(key);
 
-  const downloadUrl = await getSignedUrl(s3, command, {
-    expiresIn: 60 * 5,
-  });
+  const downloadUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });
 
   return { downloadUrl };
+}
+
+function toGetObjectCommand(key: string): GetObjectCommand {
+  return new GetObjectCommand({
+    Bucket: bucket,
+    Key: key,
+  });
 }

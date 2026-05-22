@@ -34,7 +34,10 @@ resource "aws_iam_role_policy" "s3_upload_policy" {
       Effect = "Allow",
       Action = [
         "s3:PutObject",
-        "s3:GetObject"
+        "s3:GetObject",
+        "s3:CreateMultipartUpload",
+        "s3:AbortMultipartUpload",
+        "s3:ListMultipartUploadParts"
       ],
       Resource = "${aws_s3_bucket.file_share.arn}/*"
     }]

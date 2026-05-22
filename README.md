@@ -27,8 +27,10 @@ terraform apply         # apply changes
 
 ## Testing API
 
+### Upload
+
 ```bash
-curl -X POST https://YOUR_API_ID.execute-api.eu-west-2.amazonaws.com/upload-urls \
+curl -X POST https://{apiId}.execute-api.eu-west-2.amazonaws.com/upload-urls \
   -H "Content-Type: application/json" \
   -d '{"filename":"test/text-file.txt","contentType":"text/plain"}'
 ```
@@ -50,10 +52,12 @@ curl -X PUT "{uploadUrl}" \
   --upload-file test/text-file.txt
 ```
 
+### Download
+
 Then to generate a download url for the uploaded file:
 
 ```bash
-curl -X POST https://YOUR_API_ID.execute-api.eu-west-2.amazonaws.com/download-urls \
+curl -X POST https://{apiId}.execute-api.eu-west-2.amazonaws.com/download-urls \
   -H "Content-Type: application/json" \
   -d '{"key":"{key}","contentType":"text/plain"}'
 ```
@@ -72,6 +76,17 @@ And finally to view the contents of the downloaded file:
 curl "{downloadUrl}"
 ```
 
+### Multipart upload
+
+```bash
+curl -X POST https://{api.id}.execute-api.eu-west-2.amazonaws.com/multipart-uploads \
+  -H "Content-Type: application/json" \
+  -d '{
+    "filename":"large-video.mp4",
+    "contentType":"video/mp4"
+  }'
+```
+
 # Running UI
 
 To run the UI, run the following commands:
@@ -83,3 +98,12 @@ npm run dev
 ```
 
 Then navigate [here](http://localhost:5173)
+
+
+
+curl -X POST https://ltc01ebmr1.execute-api.eu-west-2.amazonaws.com/multipart-uploads \
+  -H "Content-Type: application/json" \
+  -d '{
+    "filename":"large-video.mp4",
+    "contentType":"video/mp4"
+  }'
