@@ -17,7 +17,7 @@ export async function createDownloadUrl(body: any) {
   });
 
   const downloadUrl = await getSignedUrl(s3, command, {
-    expiresIn: 60 * 10,
+    expiresIn: 60 * 5,
   });
 
   return { downloadUrl };

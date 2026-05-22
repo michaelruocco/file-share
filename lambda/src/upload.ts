@@ -9,7 +9,7 @@ export async function createUploadUrl(body: any) {
   const key = toObjectKey(body);
   const contentType = toContentType(body);
   const command = toPutObjectCommand(key, contentType);
-  const options = { expiresIn: 60 * 10, };
+  const options = { expiresIn: 60 * 5, };
 
   const uploadUrl = await getSignedUrl(s3, command, options);
 

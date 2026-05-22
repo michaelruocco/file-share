@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ui</title>
+  </head>
+  <body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>File Share</title>
+
+  <link rel="stylesheet" href="/src/style.css" />
+  <h1>File Share</h1>
+
+  <div class="card">
+    <h2>Upload File</h2>
+
+    <input type="file" id="uploadFile" />
+
+    <button id="uploadButton">
+      Upload
+    </button>
+
+    <div class="result" id="uploadResult"></div>
+  </div>
+
+  <div class="card">
+    <h2>Download File</h2>
+
+    <textarea
+      id="downloadKey"
+      rows="4"
+      placeholder="Paste object key here"
+    ></textarea>
+
+    <button id="downloadButton">
+      Generate Download Link
+    </button>
+
+    <div class="result" id="downloadResult"></div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

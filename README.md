@@ -25,7 +25,7 @@ terraform plan          # view changes that will be applied
 terraform apply         # apply changes
 ```
 
-## Testing
+## Testing API
 
 ```bash
 curl -X POST https://YOUR_API_ID.execute-api.eu-west-2.amazonaws.com/upload-urls \
@@ -71,3 +71,15 @@ And finally to view the contents of the downloaded file:
 ```bash
 curl "{downloadUrl}"
 ```
+
+# Running UI
+
+To run the UI, run the following commands:
+
+```bash
+cd ui
+npm install
+npm run dev
+```
+
+Then navigate [here](http://localhost:5173)

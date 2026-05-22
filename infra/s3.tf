@@ -42,3 +42,27 @@ resource "aws_s3_bucket_lifecycle_configuration" "file_expiry" {
     }
   }
 }
+
+resource "aws_s3_bucket_cors_configuration" "file_share_cors" {
+  bucket = aws_s3_bucket.file_share.id
+
+  cors_rule {
+    allowed_headers = ["*"]
+
+    allowed_methods = [
+      "GET",
+      "PUT",
+      "HEAD"
+    ]
+
+    allowed_origins = [
+      "http://localhost:5173"
+    ]
+
+    expose_headers = [
+      "ETag"
+    ]
+
+    max_age_seconds = 300
+  }
+}

@@ -1,6 +1,29 @@
 resource "aws_apigatewayv2_api" "http_api" {
   name          = "file-share-api"
   protocol_type = "HTTP"
+
+  cors_configuration {
+    allow_origins = [
+      "http://localhost:5173"
+    ]
+
+    allow_methods = [
+      "GET",
+      "POST",
+      "PUT",
+      "OPTIONS"
+    ]
+
+    allow_headers = [
+      "content-type"
+    ]
+
+    expose_headers = [
+      "etag"
+    ]
+
+    max_age = 300
+  }
 }
 
 resource "aws_apigatewayv2_integration" "lambda_integration" {
