@@ -41,6 +41,17 @@ resource "aws_s3_bucket_lifecycle_configuration" "file_expiry" {
       days = 14
     }
   }
+
+  rule {
+    id     = "multipart-cleanup"
+    status = "Enabled"
+
+    filter {}
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 1
+    }
+  }
 }
 
 resource "aws_s3_bucket_cors_configuration" "file_share_cors" {
@@ -66,3 +77,4 @@ resource "aws_s3_bucket_cors_configuration" "file_share_cors" {
     max_age_seconds = 300
   }
 }
+

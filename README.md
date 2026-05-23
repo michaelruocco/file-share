@@ -32,7 +32,7 @@ terraform apply         # apply changes
 ```bash
 curl -X POST https://{apiId}.execute-api.eu-west-2.amazonaws.com/upload-urls \
   -H "Content-Type: application/json" \
-  -d '{"filename":"test/text-file.txt","contentType":"text/plain"}'
+  -d '{"filename":"tests/text-file.txt","contentType":"text/plain"}'
 ```
 
 Should return something along the lines of:
@@ -49,8 +49,9 @@ Then:
 ```bash
 curl -X PUT "{uploadUrl}" \
   -H "Content-Type: text/plain" \
-  --upload-file test/text-file.txt
+  --upload-file tests/text-file.txt
 ```
+
 
 ### Download
 
@@ -82,8 +83,8 @@ curl "{downloadUrl}"
 curl -X POST https://{api.id}.execute-api.eu-west-2.amazonaws.com/multipart-uploads \
   -H "Content-Type: application/json" \
   -d '{
-    "filename":"large-video.mp4",
-    "contentType":"video/mp4"
+    "filename":"tests/test-multipart.bin",
+    "contentType":"application/octet-stream"
   }'
 ```
 
@@ -98,12 +99,3 @@ npm run dev
 ```
 
 Then navigate [here](http://localhost:5173)
-
-
-
-curl -X POST https://ltc01ebmr1.execute-api.eu-west-2.amazonaws.com/multipart-uploads \
-  -H "Content-Type: application/json" \
-  -d '{
-    "filename":"large-video.mp4",
-    "contentType":"video/mp4"
-  }'

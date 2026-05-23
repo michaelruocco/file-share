@@ -1,10 +1,19 @@
 import { CreateMultipartUploadCommand } from "@aws-sdk/client-s3";
-import { s3, bucket, toObjectKey, toContentType } from "../s3";
+import { s3, bucket, toObjectKey } from "../s3";
+import { APIGatewayProxyEventV2 } from "aws-lambda";
+import { toBody } from "../common";
 
-export async function createMultipartUploadUrl(body: any) {
+type CreateMultipartPartUploadRequest = {
+  filename: string;
+  contentType: string;
+};
+
+export async function createMultipartUploadUrlHandler(
+    event: APIGatewayProxyEventV2,
+    params: Record<string, string>): Promise<any> {
+  const body = toBody<CreateMultipartPartUploadRequest>(event);
   const key = toObjectKey(body.filename);
-  const contentType = toContentType(body);
-  const command = toCreateMultipartUploadCommand(key, contentType);
+  const command = toCreateMultipartUploadCommand(key, body.contentType);
 
   const response = await s3.send(command);
 

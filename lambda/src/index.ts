@@ -1,65 +1,73 @@
-import { APIGatewayProxyHandlerV2 } from "aws-lambda";
-import { createUploadUrl } from "./upload";
-import { createDownloadUrl } from "./download";
-import { createMultipartUploadUrl } from "./multipart/start";
+import { APIGatewayProxyHandlerV2, APIGatewayProxyEventV2 } from "aws-lambda";
+import { uploadHandler } from "./upload";
+import { downloadHandler } from "./download";
+import { createMultipartUploadUrlHandler } from "./multipart/start";
+import { createMultipartUploadPartUrlHandler } from "./multipart/part";
+import { route, matchRoute } from "./router/router";
 
-type Handler = (body: any) => Promise<any>;
+type Handler = (event: APIGatewayProxyEventV2) => Promise<any>;
 
-const routes: Record<string, Handler> = {
-  "POST /upload-urls": createUploadHandler,
-  "POST /download-urls": createDownloadHandler,
-  "POST /multipart-uploads": createMultipartUploadHandler,
-};
+const routes = [
+  route(
+    "POST",
+    "/upload-urls",
+    uploadHandler
+  ),
 
-export const handler: APIGatewayProxyHandlerV2 = async (event) => {
+  route(
+    "POST",
+    "/download-urls",
+    downloadHandler
+  ),
+
+  route(
+    "POST",
+    "/multipart-uploads",
+    createMultipartUploadUrlHandler
+  ),
+
+  route(
+    "POST",
+    "/multipart-uploads/:uploadId/part-urls",
+    createMultipartUploadPartUrlHandler
+  ),
+];
+
+export const handler: APIGatewayProxyHandlerV2 = async (event: APIGatewayProxyEventV2): Promise<any> => {
   try {
     console.log(`recieved event ${JSON.stringify(event)}`);
-    const body = event.body ? JSON.parse(event.body) : {};
+    const method = event.requestContext.http.method;
+    const path = event.requestContext.http.path;
 
-    const routeKey = `${event.requestContext.http.method} ${event.requestContext.http.path}`;
-    const handler = routes[routeKey];
-    console.log(`found handler ${handler} using route key ${routeKey}`);
+    const route = matchRoute(method, path, routes);
 
-    if (!handler) {
+    if (!route) {
       return notFound();
     }
 
-    return await handler(body);
+    const response = await route.handler(event, route.params);
+
+    return toSuccessResponse(response);
   } catch (err: any) {
     return handleError(err);
   }
 };
 
-async function createUploadHandler(body: any) {
-  const result = await createUploadUrl(body);
-  return toSuccessResponse(result);
-}
-
-async function createDownloadHandler(body: any) {
-  const result = await createDownloadUrl(body);
-  return toSuccessResponse(result);
-}
-
-async function createMultipartUploadHandler(body: any) {
-  const result = await createMultipartUploadUrl(body);
-  return toSuccessResponse(result);
-}
-
-function toSuccessResponse(result: any) {
-  return {
-    statusCode: 200,
-    body: JSON.stringify(result),
-  };
-}
-
-function notFound() {
+function notFound(): any {
   return {
     statusCode: 404,
     body: JSON.stringify({ message: "not found" }),
   };
-}
+};
 
-function handleError(err: any) {
+function toSuccessResponse(result: any): any {
+  return {
+    statusCode: 200,
+    body: JSON.stringify(result),
+  };
+};
+
+function handleError(err: any): any {
   console.error(err);
   return {
     statusCode: 500,
@@ -67,4 +75,4 @@ function handleError(err: any) {
       message: err?.message || "server error",
     }),
   };
-}
+};

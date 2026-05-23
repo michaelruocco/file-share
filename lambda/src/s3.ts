@@ -7,12 +7,7 @@ export const s3 = new S3Client({
   region: process.env.AWS_REGION,
 });
 
-export function toObjectKey(body: any): string {
-  const rawFilename = body.filename ?? "upload.bin";
+export function toObjectKey(rawFilename: string): string {
   const filename = rawFilename.split(/[\\/]/).pop();
   return `uploads/${randomUUID()}/${filename}`;
-}
-
-export function toContentType(body: any): string {
-   return body.contentType ?? "application/octet-stream"; 
-}
+};
