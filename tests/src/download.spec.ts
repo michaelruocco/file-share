@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { textFilePath, createUploadUrl, doUpload, createDownloadUrl, doDownload, } from './fixtures';
+import { textFilePath, createUploadUrl, createDownloadUrl, doDownload, readAndUploadFile, } from './fixtures';
 import { readFileSync } from 'fs';
 
 test('basic download', async () => {
@@ -7,7 +7,7 @@ test('basic download', async () => {
   const filePath = textFilePath();
   const createUploadUrlResponse = await createUploadUrl(filePath, contentType);
   const createUploadUrlBody = await createUploadUrlResponse.json();
-  const uploadResponse = await doUpload(createUploadUrlBody.uploadUrl, contentType, filePath);
+  const uploadResponse = await readAndUploadFile(createUploadUrlBody.uploadUrl, contentType, filePath);
   expect(uploadResponse.ok).toBeTruthy();
 
   const createUrlResponse = await createDownloadUrl(createUploadUrlBody.key, contentType);

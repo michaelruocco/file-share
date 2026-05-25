@@ -11,3 +11,8 @@ export function toBody<T>(
   console.log(`parsed body ${JSON.stringify(body)}`);
   return body;
 }
+
+
+export function pathToUploadId(path: string): string {
+  return path.split("/")[2];
+}

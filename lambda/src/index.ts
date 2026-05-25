@@ -3,6 +3,7 @@ import { uploadHandler } from "./upload";
 import { downloadHandler } from "./download";
 import { createMultipartUploadUrlHandler } from "./multipart/start";
 import { createMultipartUploadPartUrlHandler } from "./multipart/part";
+import { completeMultipartUploadHandler } from "./multipart/complete";
 import { route, matchRoute } from "./router/router";
 
 type Handler = (event: APIGatewayProxyEventV2) => Promise<any>;
@@ -30,6 +31,12 @@ const routes = [
     "POST",
     "/multipart-uploads/:uploadId/part-urls",
     createMultipartUploadPartUrlHandler
+  ),
+
+  route(
+    "POST",
+    "/multipart-uploads/:uploadId",
+    completeMultipartUploadHandler
   ),
 ];
 

@@ -3,8 +3,13 @@ import { readFileSync } from 'fs';
 import * as path from 'path';
 
 export function textFilePath(): string {
-  return path.resolve(__dirname, '..', 'files', 'text-file.txt');
+  return path.resolve(__dirname, '..', 'files', 'test-file.txt');
 }
+
+export function largeBinaryFilePath(): string {
+  return path.resolve(__dirname, '..', 'files', 'test-multipart.bin');
+}
+
 
 export async function createUploadUrl(filename: string, contentType: string): Promise<APIResponse> {
     const api = await createApiContext();
@@ -22,7 +27,6 @@ export async function createUploadUrl(filename: string, contentType: string): Pr
 
 export async function createDownloadUrl(key: string, contentType: string): Promise<APIResponse> {
     const api = await createApiContext();
-    console.log(`download key ${key}`);
     try {
       return await api.post('/download-urls', {
         data: {
@@ -44,14 +48,26 @@ export async function createApiContext(): Promise<APIRequestContext> {
   });
 }
 
-export async function doUpload(uploadUrl: string, contentType: string, filePath: string): Promise<Response> {
+export async function readAndUploadFile(
+  uploadUrl: string,
+  contentType: string,
+  filePath: string
+): Promise<Response> {
   const fileBuffer = readFileSync(filePath);
+  return doUpload(
+    uploadUrl,
+    contentType,
+    fileBuffer
+  );
+}
+
+export async function doUpload(uploadUrl: string, contentType: string, body: Buffer): Promise<Response> {
   return await fetch(uploadUrl, {
     method: 'PUT',
     headers: {
       'Content-Type': contentType
     },
-    body: fileBuffer
+    body: new Uint8Array(body)
   });
 }
 
@@ -60,3 +76,4 @@ export async function doDownload(downloadUrl: string): Promise<Response> {
     method: 'GET',
   });
 }
+

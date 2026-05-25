@@ -78,14 +78,82 @@ curl "{downloadUrl}"
 
 ### Multipart upload
 
+To start a multipart upload you can run:
+
 ```bash
-curl -X POST https://{api.id}.execute-api.eu-west-2.amazonaws.com/multipart-uploads \
+curl -X POST https://{apiId}.execute-api.eu-west-2.amazonaws.com/multipart-uploads \
   -H "Content-Type: application/json" \
   -d '{
     "filename":"tests/files/test-multipart.bin",
     "contentType":"application/octet-stream"
   }'
 ```
+
+Then to create each part upload url:
+
+```bash
+curl -X POST https://{apiId}.execute-api.eu-west-2.amazonaws.com/multipart-uploads/{uploadId}/part-urls \
+  -H "Content-Type: application/json" \
+  -d '{
+    "key":"{key}",
+    "partNumber":1
+  }'
+```
+
+Then upload each part:
+
+```bash
+curl -i -X PUT "{uploadUrl}" \
+  -H "Content-Type: application/octet-stream" \
+  --data-binary @tests/files/test-multipart.bin
+```
+
+Then to complete the multipart upload:
+
+```bash
+curl -X POST https://{apiId}.execute-api.eu-west-2.amazonaws.com/multipart-uploads/{uploadId} \
+  -H "Content-Type: application/json" \
+  -d '{
+    "key":"{key}",
+    "parts": [
+      {
+        "number": 1,
+        "etag": "{etag}"
+      }
+    ]
+  }'
+```
+
+curl -X POST https://sj7l9w57m1.execute-api.eu-west-2.amazonaws.com/multipart-uploads \
+  -H "Content-Type: application/json" \
+  -d '{
+    "filename":"tests/files/test-multipart.bin",
+    "contentType":"application/octet-stream"
+  }'
+
+curl -X POST https://sj7l9w57m1.execute-api.eu-west-2.amazonaws.com/multipart-uploads/evM9l8ro1tMJ3R.Nv2H1VQoZ7ibz5bx.EvmG7GPdAZYXn.DbdLV5tda4HUXLOWx_FJMxKfhiQUEbXo.ldhX4T6oFBdve3H9REwGayDswIaHpXRq8ATNMbRk5e1OnUkyXG2fixpRP899D4Z_vWoqATg--/part-urls \
+  -H "Content-Type: application/json" \
+  -d '{
+    "key":"uploads/84dd93d6-4862-4cae-9f91-4eabac3a2bae/test-multipart.bin",
+    "partNumber":1
+  }'
+
+curl -i -X PUT "https://mruocco-file-share-dev.s3.eu-west-2.amazonaws.com/uploads/84dd93d6-4862-4cae-9f91-4eabac3a2bae/test-multipart.bin?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAUYKQC5P5VKD3BNRZ%2F20260525%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260525T100352Z&X-Amz-Expires=300&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEJr%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCWV1LXdlc3QtMiJHMEUCIQDgj6fKVqgWqdNAssKt8oBKNgC6pN6MNMqqJ4%2BhtaO6aAIgel6Womvdn8a3qqe8beHCTAUN1la01N2tqX9FiQfJkJEq7AMIYxAGGgwzMjcxMjIzNDkwNTEiDN8lubdmvy%2BlivwTpyrJA5VjHvxrKhDaJ0S3QCy%2FDiwBMDzIp7y5OTwonzOZoJad6H%2B%2BoL8aXMEOoxqK1DreqPBqfHgaXQMB35H6B2J%2FTR7Mj%2BiF610u27iZ2fY0lR7jeUD4DpaQ6Zp%2B%2Bjw3TwQ5%2BHEyiIsxHo2d50cz8%2BtfBxD2Tt6WvG0L7OqUmy2ljvqI%2BglbLqhv1Eh5dtCloyfqBpL7tO%2FWpVQ%2BDECERlj4Bce%2B7eBkS%2FR1ydUqvyPkiNYzIpU1gU9ngjaiw0KDKwAg72VMUPuTmv5kn84VnIRCQoGdeiR1vbuAd7h78bnO4p8X9ZMUVPYNyUqaegdd2dQu%2BVkjBbM4EVFMX8BkxfUH%2B5SJ70rHeS6QZIC5gKiWnaqWVsFo6qlcsRNdFgps23MFqNkRPybC3R4s8wF22MjG0dIsINmd9u4jIIH3%2BmVg0WItS8YscmP6u5BUdSLq5WV%2BQPhq11tD9a6FcQJj%2BkDvPeGHp9K4BeRXoNZpaiL5x6iWVRcjeHE%2BFxnzKhKvFDCAfPpEKWTdQF32XOGxrBWudOZUazNU7C4yHskFEy%2BWV2hQVzMInQE62qpR4c%2BEO0YszDU4swWir2etXnIVZygupNUe9jcXFYLMq54w4bzQ0AY6oQFG1W8VS%2Fy3qJnH66BlK5exQaACpnQUB9Q3LnmpHvxm0bP7br1HNq4M%2BNn33G45O7SRmhiRfgj6CH%2BVH63fk53spHNUW6TtipvApRD%2F2AKZ8QC6FpDqe0qIe%2F4vMt8bqcnHCzObH33d7Tu5ziHP0lkuVjjA03JlIWpvK%2FyR%2FOik7AqvJcjRy6GaAvgYh%2BBpbYvqY4nlkRapJmaUB1rxaWlSyQ%3D%3D&X-Amz-Signature=e98dd895dd6637bec53f990426b07cd9e7cb1b607760c9174b64e320073c52fc&X-Amz-SignedHeaders=host&partNumber=1&uploadId=evM9l8ro1tMJ3R.Nv2H1VQoZ7ibz5bx.EvmG7GPdAZYXn.DbdLV5tda4HUXLOWx_FJMxKfhiQUEbXo.ldhX4T6oFBdve3H9REwGayDswIaHpXRq8ATNMbRk5e1OnUkyXG2fixpRP899D4Z_vWoqATg--&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=UploadPart" \
+  -H "Content-Type: application/octet-stream" \
+  --data-binary @tests/files/test-multipart.bin
+
+curl -X POST https://sj7l9w57m1.execute-api.eu-west-2.amazonaws.com/multipart-uploads/evM9l8ro1tMJ3R.Nv2H1VQoZ7ibz5bx.EvmG7GPdAZYXn.DbdLV5tda4HUXLOWx_FJMxKfhiQUEbXo.ldhX4T6oFBdve3H9REwGayDswIaHpXRq8ATNMbRk5e1OnUkyXG2fixpRP899D4Z_vWoqATg-- \
+  -H "Content-Type: application/json" \
+  -d '{
+    "key":"uploads/84dd93d6-4862-4cae-9f91-4eabac3a2bae/test-multipart.bin",
+    "parts": [
+      {
+        "number": 1,
+        "etag": "c3ed94fe77b6a17581201f9dfd56ecb4"
+      }
+    ]
+  }'
+
 
 # Running UI
 
@@ -98,23 +166,3 @@ npm run dev
 ```
 
 Then navigate [here](http://localhost:5173)
-
-```bash
-curl -X POST https://ltc01ebmr1.execute-api.eu-west-2.amazonaws.com/multipart-uploads \
-  -H "Content-Type: application/json" \
-  -d '{
-    "filename":"tests/files/test-multipart.bin",
-    "contentType":"application/octet-stream"
-  }'
-
-curl -X POST https://ltc01ebmr1.execute-api.eu-west-2.amazonaws.com/multipart-uploads/h7BJkO36N5dTE8ohGywB5DJX1m.wo_8WWKvV8wIqtd9H.1ArGMrVvlbP3m_2pvPZfrQneU7QISzfof5r.Uk7LKuQs2dWpr5_a.w5nLbLTfLBtD4Iscr9ndrBZP.42FepxYyv8EJbbunvzY0QZ14G2A--/part-urls \
-  -H "Content-Type: application/json" \
-  -d '{
-    "key":"uploads/58210b01-0e25-40a1-a7d0-221d1ee82a5a/test-multipart.bin",
-    "partNumber":1
-  }'
-
-curl -i -X PUT "https://mruocco-file-share-dev.s3.eu-west-2.amazonaws.com/uploads/58210b01-0e25-40a1-a7d0-221d1ee82a5a/test-multipart.bin?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAUYKQC5P5SSQBNZ3Y%2F20260522%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260522T155047Z&X-Amz-Expires=300&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEFgaCWV1LXdlc3QtMiJHMEUCIF9OHcUqH0p8wdbHLA7hA9stk3W60w9NdHjw4AYbezR2AiEAtQ5rX00ziCY%2FIBl4Aqm2Dq7nMuka8r2y4WfQz%2BIlhHQq7AMIIRAGGgwzMjcxMjIzNDkwNTEiDBDfOoZ%2Fwd5nPc5ptSrJAwIfPLvbE0DZf3Z9MGhasCu%2F1rjlrHRv0gSbr8nfeNAm9ezbgT1BYqNhcp8NFcM9XuaCQ1PIoRZUMKFsaeMGRC03oph%2BjHj4WpSpe%2FJir0j5yOIdsTNbytegPDbj7NUrqEvGoqvRP2S8740wYHZfAVZPJ9Jmd%2BVefoIeEwAj9tM98S7IpmcaBpRFd1kMTDxlNdmk%2F24a18fYC9IjWTOEQis9N6qEQSA5J8z2zK8lnaAeJ5pq66sDMWWr9BDfbKc%2FUduVYV2FGyuaCcgZm7qRbWDAaeft%2FY4dbuOX1EobE%2BSTSc%2FnI6FvS0I%2Fn6rB7fW%2FK48wRLUyauf2Fl2waCRJvLlc5rh8gVe1Sjo7jXHgIAEA4zpcoydYDosjmTxbOwJKhFUwr5xLm49GQMMN5378bPtL58PhMM7plZWCO5byTBpbLTSAJw5OFYTNs9SrMfQrKVLqXIXPulw70HtD1bWE8T%2FpIah1ZoyIlMQQVrcHY2wm9TTZmeY8fl6cNcCZRfe9TnVA5hUH0vYAtBNUfiJ3wQfGtgJ%2BN2HZH0IsIhN9L9hP8h08cC5UOj1%2Fc8jPVPzskgdandZCfsFJOTIL9scDB2C9sihl7IXwjPgw9fPB0AY6oQFGv9OHFKDm98YU85cUJ47hMd0mUddHRKWWQOksdt40MnicIpYjjtkzyf%2BRn8R%2BtikxwLvC48ukyKzW3yGh6oDXSBwsJvWN5jvC6vinyMtiX0iAC3u1D7u3alWxPIcyLQeC9foR7ut4vpDvI67W7vtDposHAitVbCKONi5%2B7wlXLWfpe3pRUR61CJDCImi1%2FH1SDdGVmjaIidaEBWzy3KNiWA%3D%3D&X-Amz-Signature=109c40f0d42d95ed39b9b6699476f1b7e8130f8b7e0ea2e6e79f08c307e32286&X-Amz-SignedHeaders=host&partNumber=1&uploadId=h7BJkO36N5dTE8ohGywB5DJX1m.wo_8WWKvV8wIqtd9H.1ArGMrVvlbP3m_2pvPZfrQneU7QISzfof5r.Uk7LKuQs2dWpr5_a.w5nLbLTfLBtD4Iscr9ndrBZP.42FepxYyv8EJbbunvzY0QZ14G2A--&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=UploadPart" \
--H "Content-Type: application/octet-stream" \
---data-binary @tests/files/test-multipart.bin
-```

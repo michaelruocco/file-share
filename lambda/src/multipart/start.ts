@@ -13,17 +13,13 @@ export async function createMultipartUploadUrlHandler(
     params: Record<string, string>): Promise<any> {
   const body = toBody<CreateMultipartPartUploadRequest>(event);
   const key = toObjectKey(body.filename);
-  const command = toCreateMultipartUploadCommand(key, body.contentType);
+  const command = new CreateMultipartUploadCommand({
+    Bucket: bucket,
+    Key: key,
+    ContentType: body.contentType,
+  })
 
   const response = await s3.send(command);
 
   return { uploadId: response.UploadId, key };
-}
-
-function toCreateMultipartUploadCommand(key: string, contentType: string): CreateMultipartUploadCommand {
-  return new CreateMultipartUploadCommand({
-    Bucket: bucket,
-    Key: key,
-    ContentType: contentType
-  });
 }
