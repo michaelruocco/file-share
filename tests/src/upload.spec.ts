@@ -1,37 +1,13 @@
-import { test, expect, request } from '@playwright/test';
-import { readFileSync } from 'fs';
+import { test, expect } from '@playwright/test';
+import { createUploadUrl, textFilePath, doUpload } from './fixtures';
 
 test('basic upload', async () => {
-  const api = await request.newContext({
-    baseURL: 'https://ltc01ebmr1.execute-api.eu-west-2.amazonaws.com'
-  });
+  const filePath = textFilePath();
   const contentType = 'text/plain';
+  const createUrlResponse = await createUploadUrl(filePath, contentType);
+  expect(createUrlResponse.ok()).toBeTruthy();
 
-  const createResponse = await api.post('/upload-urls', {
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    data: {
-      filename: 'text-file.txt',
-      contentType: contentType,
-    }
-  });
-
-  expect(createResponse.ok()).toBeTruthy();
-
-  const createBody = await createResponse.json();
-  const uploadUrl = createBody.uploadUrl;
-  const fileBuffer = readFileSync(
-    'text-file.txt'
-  );
-
-  const uploadResponse = await fetch(uploadUrl, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': contentType
-    },
-    body: fileBuffer
-  });
-
+  const createUrlBody = await createUrlResponse.json();
+  const uploadResponse = await doUpload(createUrlBody.uploadUrl, contentType, filePath);
   expect(uploadResponse.ok).toBeTruthy();
 });
