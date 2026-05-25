@@ -108,7 +108,9 @@ curl -i -X PUT "{uploadUrl}" \
   --data-binary @tests/files/test-multipart.bin
 ```
 
-Then to complete the multipart upload:
+The `-i` option is used here to log the response headers which will
+contain the etag header, the etag header value is required to be passed to
+the multipart complete endpoint. To complete the multipart upload:
 
 ```bash
 curl -X POST https://{apiId}.execute-api.eu-west-2.amazonaws.com/multipart-uploads/{uploadId} \
