@@ -5,7 +5,12 @@ import {
   uploadFile
 } from "../api/files";
 
-export default function UploadForm() {
+type Props = {
+  onUploaded: () => void;
+};
+
+
+export default function UploadForm({onUploaded}: Props) {
 
   const [file, setFile] =
     useState<File | null>(null);
@@ -17,7 +22,6 @@ export default function UploadForm() {
     useState<string>("");
 
   async function handleUpload() {
-
     setResult("");
     setError("");
 
@@ -27,7 +31,6 @@ export default function UploadForm() {
     }
 
     try {
-
       const uploadData =
         await createUploadUrl(
           file.name,
@@ -35,13 +38,10 @@ export default function UploadForm() {
         );
 
       await uploadFile(uploadData.uploadUrl, file);
-
       setResult(uploadData.key);
-
+      onUploaded();
     } catch (err) {
-
       console.error(err);
-
       setError(
         err instanceof Error
           ? err.message

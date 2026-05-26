@@ -1,5 +1,21 @@
 import { API_BASE_URL } from "../config";
 
+export type FileSummary = {
+  key: string;
+  size: number;
+  lastModified?: string;
+};
+
+export async function getFiles(): Promise<FileSummary[]> {
+  const response = await fetch(`${API_BASE_URL}/files`);
+
+  if (!response.ok) {
+    throw new Error("Failed to list files");
+  }
+
+  return await response.json();
+}
+
 export async function createUploadUrl(
   filename: string,
   contentType: string
@@ -41,6 +57,11 @@ export async function uploadFile(
   if (!response.ok) {
     throw new Error("File upload failed");
   }
+}
+
+export async function downloadFile(key: string): Promise<void> {
+  const body = await createDownloadUrl(key);
+  window.open(body.downloadUrl, "_blank");
 }
 
 export async function createDownloadUrl(
