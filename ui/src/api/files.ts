@@ -16,10 +16,41 @@ export async function getFiles(): Promise<FileSummary[]> {
   return await response.json();
 }
 
-export async function createUploadUrl(
-  filename: string,
-  contentType: string
-) {
+const MULTIPART_UPLOAD_THRESHOLD =
+  10 * 1024 * 1024;
+
+export async function uploadFile(
+  file: File
+): Promise<{ key: string }> {
+  if (
+    file.size >=
+    MULTIPART_UPLOAD_THRESHOLD
+  ) {
+    return multipartUpload(file);
+  }
+  return singleUpload(file);
+}
+
+async function singleUpload(file: File): Promise<{ key: string }> {
+  const contentType = file.type || "application/octet-stream";
+  const uploadData = await createUploadUrl(file.name, contentType);
+  await uploadToSignedUrl(uploadData.uploadUrl, file, contentType);
+  return {
+    key: uploadData.key
+  };
+}
+
+async function multipartUpload(file: File): Promise<{ key: string }> {
+  console.log(
+    "multipart upload",
+    file.name
+  );
+  throw new Error(
+    "Multipart upload not implemented yet"
+  );
+}
+
+async function createUploadUrl(filename: string, contentType: string) {
   const response = await fetch(
     `${API_BASE_URL}/upload-urls`,
     {
@@ -41,15 +72,11 @@ export async function createUploadUrl(
   return response.json();
 }
 
-export async function uploadFile(
-  uploadUrl: string,
-  file: File
-) {
+async function uploadToSignedUrl(uploadUrl: string, file: File, contentType: string) {
   const response = await fetch(uploadUrl, {
     method: "PUT",
     headers: {
-      "Content-Type":
-        file.type || "application/octet-stream"
+      "Content-Type": contentType
     },
     body: file
   });

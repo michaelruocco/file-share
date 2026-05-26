@@ -1,9 +1,5 @@
 import { useState } from "react";
-
-import {
-  createUploadUrl,
-  uploadFile
-} from "../api/files";
+import { uploadFile } from "../api/files";
 
 type Props = {
   onUploaded: () => void;
@@ -31,13 +27,7 @@ export default function UploadForm({onUploaded}: Props) {
     }
 
     try {
-      const uploadData =
-        await createUploadUrl(
-          file.name,
-          file.type || "application/octet-stream"
-        );
-
-      await uploadFile(uploadData.uploadUrl, file);
+      const uploadData = await uploadFile(file);
       setResult(uploadData.key);
       onUploaded();
     } catch (err) {
