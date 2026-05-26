@@ -1,12 +1,19 @@
 import { useState } from "react";
 
 import { uploadFile } from "../api/files";
-import { emptyProgress } from "../api/multipart";
 import type { UploadProgress } from "../api/multipart";
 
 type Props = {
   onUploaded: () => void;
 };
+
+function formatProgress(progress: UploadProgress) {
+  return `${formatPercentage(progress.percentage)} • ${formatBytesPerSecond(progress.bytesPerSecond)} • ${formatDuration(progress.remainingSeconds)} remaining`;
+}
+
+function formatPercentage(percentage: number): string {
+  return `${percentage.toFixed(2)}%`;
+}
 
 function formatBytesPerSecond(bytesPerSecond: number): string {
   const units = ["B/s", "KB/s", "MB/s", "GB/s", "TB/s"];
@@ -40,10 +47,10 @@ export default function UploadForm({onUploaded}: Props) {
   const [file, setFile] = useState<File | null>(null);
   const [result, setResult] = useState<string>("");
   const [error, setError] = useState<string>("");
-  const [progress, setProgress] = useState<UploadProgress>(emptyProgress);
+  const [progress, setProgress] = useState<UploadProgress>(null);
 
   async function handleUpload() {
-    setProgress(emptyProgress);
+    setProgress(null);
     setResult("");
     setError("");
 
@@ -67,7 +74,7 @@ export default function UploadForm({onUploaded}: Props) {
           : "Upload failed"
       );
     } finally {
-      setProgress(emptyProgress);
+      setProgress(null);
     }
   }
 
@@ -109,7 +116,7 @@ export default function UploadForm({onUploaded}: Props) {
         </div>
         )}
 
-        {progress.percentage > 0 && (
+        {progress && (
             <div className="progress-wrapper">
                 <div
                 className="progress-bar"
@@ -118,7 +125,7 @@ export default function UploadForm({onUploaded}: Props) {
                 }}
                 />
                 <span>
-                {progress.percentage}% • {formatBytesPerSecond(progress.bytesPerSecond)} • {formatDuration(progress.remainingSeconds)} remaining
+                  {formatProgress(progress)}
                 </span>
             </div>
         )}

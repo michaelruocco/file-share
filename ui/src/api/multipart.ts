@@ -19,7 +19,7 @@ export type UploadProgress = {
   remainingSeconds: number;
 };
 
-export const emptyProgress = {
+const emptyProgress = {
     uploadedBytes: 0,
     totalBytes: 0,
     percentage: 0,
@@ -35,6 +35,7 @@ export async function multipartUpload(
     progress: UploadProgress
   ) => void
 ): Promise<{ key: string }> {
+  onProgress?.(emptyProgress);
   const contentType = file.type || "application/octet-stream";
   const createResponse = await createMultipartUpload(file.name, contentType);
   const chunks = toChunks(file, CHUNK_SIZE_MB);
@@ -67,7 +68,7 @@ export async function multipartUpload(
             onProgress?.({
               uploadedBytes,
               totalBytes: file.size,
-              percentage: Math.round((uploadedBytes / totalBytes) * 100),
+              percentage: (uploadedBytes / totalBytes) * 100,
               elapsedSeconds: elapsedSeconds,
               bytesPerSecond: bytesPerSecond,
               remainingBytes: remainingBytes,

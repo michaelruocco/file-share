@@ -5,6 +5,20 @@ type Props = {
   onDownload: (key: string) => void;
 };
 
+function formatBytes(bytes: number): string {
+  const units = ["B", "KB", "MB", "GB", "TB"];
+
+  let value = bytes;
+  let unitIndex = 0;
+
+  while (value >= 1024 && unitIndex < units.length - 1) {
+    value /= 1024;
+    unitIndex++;
+  }
+
+  return `${value.toFixed(2)} ${units[unitIndex]}`;
+}
+
 export default function FileList({
   files,
   onDownload
@@ -43,11 +57,11 @@ export default function FileList({
             <div>
 
                 <div className="file-name">
-                {displayName(file.key)}
+                  {displayName(file.key)}
                 </div>
 
                 <div className="file-meta">
-                {file.size} bytes
+                  {formatBytes(file.size)}
                 </div>
 
             </div>
