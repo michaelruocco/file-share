@@ -10,11 +10,11 @@ test('basic download', async () => {
   const uploadResponse = await readAndUploadFile(createUploadUrlBody.uploadUrl, contentType, filePath);
   expect(uploadResponse.ok).toBeTruthy();
 
-  const createUrlResponse = await createDownloadUrl(createUploadUrlBody.key, contentType);
-  expect(createUrlResponse.ok()).toBeTruthy();
+  const createDownloadUrlResponse = await createDownloadUrl(createUploadUrlBody.key, contentType);
+  expect(createDownloadUrlResponse.ok()).toBeTruthy();
 
-  const createUrlBody = await createUrlResponse.json();
-  const downloadResponse = await doDownload(createUrlBody.downloadUrl);
+  const createDownloadUrlBody = await createDownloadUrlResponse.json();
+  const downloadResponse = await doDownload(createDownloadUrlBody.downloadUrl);
   expect(downloadResponse.ok).toBeTruthy();
 
   const original = readFileSync(filePath, 'utf-8');
