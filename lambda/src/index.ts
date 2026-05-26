@@ -1,6 +1,7 @@
 import { APIGatewayProxyHandlerV2, APIGatewayProxyEventV2 } from "aws-lambda";
 import { uploadHandler } from "./upload";
 import { downloadHandler } from "./download";
+import { getFilesHandler } from "./files";
 import { createMultipartUploadUrlHandler } from "./multipart/start";
 import { createMultipartUploadPartUrlHandler } from "./multipart/part";
 import { completeMultipartUploadHandler } from "./multipart/complete";
@@ -37,6 +38,12 @@ const routes = [
     "POST",
     "/multipart-uploads/:uploadId",
     completeMultipartUploadHandler
+  ),
+
+  route(
+    "GET",
+    "/files",
+    getFilesHandler
   ),
 ];
 

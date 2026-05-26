@@ -71,6 +71,14 @@ resource "aws_apigatewayv2_route" "complete_multipart_upload_route" {
   target = "integrations/${aws_apigatewayv2_integration.lambda_integration.id}"
 }
 
+resource "aws_apigatewayv2_route" "get_files_route" {
+  api_id = aws_apigatewayv2_api.http_api.id
+
+  route_key = "GET /files"
+
+  target = "integrations/${aws_apigatewayv2_integration.lambda_integration.id}"
+}
+
 resource "aws_apigatewayv2_stage" "default" {
   api_id      = aws_apigatewayv2_api.http_api.id
   name        = "$default"
