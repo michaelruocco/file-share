@@ -1,23 +1,49 @@
 import { useState } from "react";
+
 import { uploadFile } from "../api/files";
+import { emptyProgress } from "../api/multipart";
+import type { UploadProgress } from "../api/multipart";
 
 type Props = {
   onUploaded: () => void;
 };
 
+function formatBytesPerSecond(bytesPerSecond: number): string {
+  const units = ["B/s", "KB/s", "MB/s", "GB/s", "TB/s"];
+
+  let value = bytesPerSecond;
+  let unitIndex = 0;
+
+  while (value >= 1024 && unitIndex < units.length - 1) {
+    value /= 1024;
+    unitIndex++;
+  }
+
+  return `${value.toFixed(2)} ${units[unitIndex]}`;
+}
+
+export function formatDuration(seconds: number): string {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = Math.floor(seconds % 60);
+
+  const parts: string[] = [];
+
+  if (h > 0) parts.push(`${h}h`);
+  if (m > 0) parts.push(`${m}m`);
+  if (s > 0 || parts.length === 0) parts.push(`${s}s`);
+
+  return parts.join(" ");
+}
 
 export default function UploadForm({onUploaded}: Props) {
-
-  const [file, setFile] =
-    useState<File | null>(null);
-
-  const [result, setResult] =
-    useState<string>("");
-
-  const [error, setError] =
-    useState<string>("");
+  const [file, setFile] = useState<File | null>(null);
+  const [result, setResult] = useState<string>("");
+  const [error, setError] = useState<string>("");
+  const [progress, setProgress] = useState<UploadProgress>(emptyProgress);
 
   async function handleUpload() {
+    setProgress(emptyProgress);
     setResult("");
     setError("");
 
@@ -27,7 +53,10 @@ export default function UploadForm({onUploaded}: Props) {
     }
 
     try {
-      const uploadData = await uploadFile(file);
+      const uploadData = await uploadFile(
+        file,
+        (progress) => { setProgress(progress); }
+      );
       setResult(uploadData.key);
       onUploaded();
     } catch (err) {
@@ -37,6 +66,8 @@ export default function UploadForm({onUploaded}: Props) {
           ? err.message
           : "Upload failed"
       );
+    } finally {
+      setProgress(emptyProgress);
     }
   }
 
@@ -76,6 +107,20 @@ export default function UploadForm({onUploaded}: Props) {
             {" "}
             <strong>{file.name}</strong>
         </div>
+        )}
+
+        {progress.percentage > 0 && (
+            <div className="progress-wrapper">
+                <div
+                className="progress-bar"
+                style={{
+                    width: `${progress.percentage}%`
+                }}
+                />
+                <span>
+                {progress.percentage}% • {formatBytesPerSecond(progress.bytesPerSecond)} • {formatDuration(progress.remainingSeconds)} remaining
+                </span>
+            </div>
         )}
 
         {error && (

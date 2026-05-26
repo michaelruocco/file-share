@@ -1,4 +1,6 @@
 import { API_BASE_URL } from "../config";
+import { multipartUpload } from "./multipart";
+import type { UploadProgress } from "./multipart";
 
 export type FileSummary = {
   key: string;
@@ -16,17 +18,19 @@ export async function getFiles(): Promise<FileSummary[]> {
   return await response.json();
 }
 
-const MULTIPART_UPLOAD_THRESHOLD =
-  10 * 1024 * 1024;
+const MULTIPART_UPLOAD_THRESHOLD = 10;
 
 export async function uploadFile(
-  file: File
+  file: File,
+  onProgress?: (
+    progress: UploadProgress
+  ) => void
 ): Promise<{ key: string }> {
   if (
     file.size >=
     MULTIPART_UPLOAD_THRESHOLD
   ) {
-    return multipartUpload(file);
+    return multipartUpload(file, onProgress);
   }
   return singleUpload(file);
 }
@@ -38,16 +42,6 @@ async function singleUpload(file: File): Promise<{ key: string }> {
   return {
     key: uploadData.key
   };
-}
-
-async function multipartUpload(file: File): Promise<{ key: string }> {
-  console.log(
-    "multipart upload",
-    file.name
-  );
-  throw new Error(
-    "Multipart upload not implemented yet"
-  );
 }
 
 async function createUploadUrl(filename: string, contentType: string) {
@@ -72,7 +66,7 @@ async function createUploadUrl(filename: string, contentType: string) {
   return response.json();
 }
 
-async function uploadToSignedUrl(uploadUrl: string, file: File, contentType: string) {
+async function uploadToSignedUrl(uploadUrl: string, file: Blob, contentType: string) {
   const response = await fetch(uploadUrl, {
     method: "PUT",
     headers: {

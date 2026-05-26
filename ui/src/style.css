@@ -150,3 +150,29 @@ body {
   color: #dc2626;
   font-weight: 600;
 }
+
+.progress-wrapper {
+  margin-top: 16px;
+  width: 100%;
+  background: #6b7280;
+  border-radius: 999px;
+  overflow: hidden;
+  height: 20px;
+  position: relative;
+}
+
+.progress-bar {
+  height: 100%;
+  background: #1d4ed8;
+  transition: width 0.2s ease;
+}
+
+.progress-wrapper span {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  line-height: 20px;
+  color: white;
+}
