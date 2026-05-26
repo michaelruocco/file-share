@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { uploadFile } from "../api/files";
 import type { UploadProgress } from "../api/multipart";
+import { formatBytes } from "../util/format";
 
 type Props = {
   onUploaded: () => void;
@@ -16,17 +17,8 @@ function formatPercentage(percentage: number): string {
 }
 
 function formatBytesPerSecond(bytesPerSecond: number): string {
-  const units = ["B/s", "KB/s", "MB/s", "GB/s", "TB/s"];
-
-  let value = bytesPerSecond;
-  let unitIndex = 0;
-
-  while (value >= 1024 && unitIndex < units.length - 1) {
-    value /= 1024;
-    unitIndex++;
-  }
-
-  return `${value.toFixed(2)} ${units[unitIndex]}`;
+  const formatted = formatBytes(bytesPerSecond);
+  return `${formatted}/s`;
 }
 
 export function formatDuration(seconds: number): string {
