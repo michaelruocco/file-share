@@ -51,37 +51,63 @@ export default function UploadForm({onUploaded}: Props) {
   }
 
   return (
-    <div>
+    <div className="panel upload-panel">
+        <div className="upload-title">
+        Upload files
+        </div>
 
-      <h2>Upload</h2>
+        <div className="upload-subtitle">
+        Choose a file to upload
+        </div>
 
-      <input
+        <input
+        id="file-input"
         type="file"
+        className="hidden-input"
         onChange={(e) =>
-          setFile(e.target.files?.[0] ?? null)
+            setFile(e.target.files?.[0] ?? null)
         }
-      />
+        />
 
-      <button onClick={handleUpload}>
-        Upload
-      </button>
+        <button
+        className="primary-button"
+        onClick={() =>
+            document
+            .getElementById("file-input")
+            ?.click()
+        }
+        >
+        Select file
+        </button>
 
-      {error && (
+        {file && (
+        <div>
+            Selected:
+            {" "}
+            <strong>{file.name}</strong>
+        </div>
+        )}
+
+        {error && (
         <div className="error">
-          {error}
+            {error}
         </div>
-      )}
+        )}
 
-      {result && (
+        {result && (
         <div className="success">
-          Upload successful
-          <br />
-          <strong>Object key:</strong>
-          <br />
-          {result}
+            Upload successful
         </div>
-      )}
+        )}
 
+        {file && (
+        <button
+            className="primary-button"
+            onClick={handleUpload}
+        >
+            Upload
+        </button>
+        )}
     </div>
   );
 }

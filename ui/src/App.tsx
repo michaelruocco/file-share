@@ -7,7 +7,9 @@ import { getFiles, downloadFile } from "./api/files";
 import type { FileSummary } from "./api/files";
 
 export default function App() {
-  const [files, setFiles] = useState<FileSummary[]>([]);
+
+  const [files, setFiles] =
+    useState<FileSummary[]>([]);
 
   async function refreshFiles() {
     const files = await getFiles();
@@ -19,12 +21,30 @@ export default function App() {
   }, []);
 
   return (
-    <div>
-      <h1>File Share</h1>
+    <div className="page">
 
-      <UploadForm onUploaded={refreshFiles}/>
+      <div className="container">
 
-      <FileList files={files} onDownload={downloadFile} />
+        <header className="hero">
+          <h1>File Share</h1>
+
+          <p>
+            Upload files to share, or
+            download what's already here.
+          </p>
+        </header>
+
+        <UploadForm
+          onUploaded={refreshFiles}
+        />
+
+        <FileList
+          files={files}
+          onDownload={downloadFile}
+        />
+
+      </div>
+
     </div>
   );
 }

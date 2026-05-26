@@ -14,32 +14,58 @@ export default function FileList({
     return <p>No uploaded files</p>;
   }
 
+  function displayName(key: string): string {
+    return key.split("/").pop() ?? key;
+  }
+
   return (
-    <div className="card">
+    <div>
 
-      <h2>Files</h2>
+        <h2 className="section-title">
+        Files
+        </h2>
 
-      {files.map(file => (
-        <div
-          key={file.key}
-          className="file-row"
-        >
-          <div>
-            <strong>{file.key}</strong>
-            <br />
+        <div className="panel files-panel">
 
-            {file.size} bytes
-          </div>
+        {files.length === 0 && (
+            <div className="empty-state">
+            No files yet.
+            </div>
+        )}
 
-          <button
-            onClick={() =>
-              onDownload(file.key)
-            }
-          >
-            Download
-          </button>
+        {files.map(file => (
+
+            <div
+            key={file.key}
+            className="file-row"
+            >
+
+            <div>
+
+                <div className="file-name">
+                {displayName(file.key)}
+                </div>
+
+                <div className="file-meta">
+                {file.size} bytes
+                </div>
+
+            </div>
+
+            <button
+                className="secondary-button"
+                onClick={() =>
+                onDownload(file.key)
+                }
+            >
+                Download
+            </button>
+
+            </div>
+        ))}
+
         </div>
-      ))}
+
     </div>
   );
 }
