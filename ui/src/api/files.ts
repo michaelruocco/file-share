@@ -18,7 +18,7 @@ export async function getFiles(): Promise<FileSummary[]> {
   return await response.json();
 }
 
-const MULTIPART_UPLOAD_THRESHOLD = 10;
+const MULTIPART_UPLOAD_THRESHOLD = 10 * 1024 * 1024;
 
 export async function uploadFile(
   file: File,

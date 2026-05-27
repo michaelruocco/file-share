@@ -67,7 +67,8 @@ resource "aws_s3_bucket_cors_configuration" "file_share_cors" {
     ]
 
     allowed_origins = [
-      "http://localhost:5173"
+      "http://localhost:5173",
+      "https://${aws_cloudfront_distribution.cloudfront_ui.domain_name}"
     ]
 
     expose_headers = [

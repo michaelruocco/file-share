@@ -41,7 +41,7 @@ export async function createDownloadUrl(key: string, contentType: string): Promi
 
 export async function createApiContext(): Promise<APIRequestContext> {
   return request.newContext({
-    baseURL: process.env.API_BASE_URL ?? 'https://n7czqqpjgh.execute-api.eu-west-2.amazonaws.com',
+    baseURL: process.env.API_BASE_URL || 'https://t08qceavmb.execute-api.eu-west-2.amazonaws.com',
     extraHTTPHeaders: {
       'Content-Type': 'application/json'
     }

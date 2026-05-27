@@ -54,7 +54,7 @@ resource "aws_iam_role_policy" "s3_upload_policy" {
 }
 
 resource "aws_lambda_function" "upload_url_lambda" {
-  function_name = "file-share-upload"
+  function_name = "file-share-upload-${var.environment}-${var.aws_region}-${data.aws_caller_identity.current.account_id}"
   role          = aws_iam_role.lambda_role.arn
   handler       = "index.handler"
   runtime       = "nodejs22.x"

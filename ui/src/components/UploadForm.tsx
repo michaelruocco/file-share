@@ -39,7 +39,7 @@ export default function UploadForm({onUploaded}: Props) {
   const [file, setFile] = useState<File | null>(null);
   const [result, setResult] = useState<string>("");
   const [error, setError] = useState<string>("");
-  const [progress, setProgress] = useState<UploadProgress>(null);
+  const [progress, setProgress] = useState<UploadProgress | null>(null);
 
   async function handleUpload() {
     setProgress(null);

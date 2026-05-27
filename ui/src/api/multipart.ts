@@ -144,6 +144,7 @@ async function createMultipartUpload(
   filename: string,
   contentType: string
 ) {
+  console.log(`${API_BASE_URL}/multipart-uploads`);
   const response = await fetch(
     `${API_BASE_URL}/multipart-uploads`,
     {
