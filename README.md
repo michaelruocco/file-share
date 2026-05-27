@@ -17,7 +17,7 @@ AWS profile is required to run terraform commands e.g.
 export AWS_PROFILE=local-dev
 ```
 
-before (the following commands need to be run from the `/infra` directory):
+once the AWS profile is set up the following commands need to be run from the `/infra` directory:
 
 ```bash
 terraform init          # only required for first time set up
@@ -25,7 +25,63 @@ terraform plan          # view changes that will be applied
 terraform apply         # apply changes
 ```
 
-## Testing API
+these commands will return output containing details of the api endpoint, bucket names,
+ui url and lambda name
+
+```bash
+api_endpoint = "https://t08qceavmb.execute-api.eu-west-2.amazonaws.com"
+storage_bucket_name = "file-share-storage-dev-eu-west-2-327122349051"
+ui_bucket_name = "file-share-ui-dev-eu-west-2-327122349051"
+ui_url = "dh4unqc8j5ixg.cloudfront.net"
+upload_url_lambda_name = "file-share-upload-dev-eu-west-2-327122349051"
+```
+
+to deploy the front end you need to move back up out of the `/infra` directory, then
+into the ui directory where you can build the ui code with the following commands:
+
+```bash
+npm install
+npm run build
+```
+
+then to deploy the ui built ui code you need to run the following, using the
+value of the `ui_bucket_name` variable output from the previous step:
+
+```bash
+aws s3 sync dist/ s3://{ui_bucket_name} --delete
+```
+
+then to view the deployed ui you can navigate to the valaue of the `ui_url`
+variable output above from `terraform apply` step i.e `https://dh4unqc8j5ixg.cloudfront.net`
+from the example above.
+
+# Running UI locally
+
+To run the UI on your local machine, run the following commands, using the value of
+the `api_endpoint` variable returned from the `terraform apply` step above:
+
+```bash
+cd ui
+npm install
+export VITE_API_BASE_URL={api_endpoint}
+npm run dev
+```
+
+Then navigate [here](http://localhost:5173)
+
+## Testing API with automated tests
+
+To run the automated API tests on your local machine, run the following commands,
+using the value of the `api_endpoint` variable returned from the `terraform apply` step above:
+
+```bash
+cd tests
+npm install
+export API_BASE_URL={api_endpoint}
+npx playwright test
+```
+
+## Testing API Manally using cURL
 
 ### Upload
 
@@ -125,15 +181,3 @@ curl -X POST https://{apiId}.execute-api.eu-west-2.amazonaws.com/multipart-uploa
     ]
   }'
 ```
-
-# Running UI
-
-To run the UI, run the following commands:
-
-```bash
-cd ui
-npm install
-npm run dev
-```
-
-Then navigate [here](http://localhost:5173)
