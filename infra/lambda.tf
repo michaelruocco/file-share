@@ -36,7 +36,7 @@ resource "aws_iam_role_policy" "s3_upload_policy" {
         Action = [
           "s3:ListBucket"
         ],
-        Resource = aws_s3_bucket.file_share.arn
+        Resource = aws_s3_bucket.file_share_storage.arn
       },
       {
         Effect = "Allow",
@@ -47,7 +47,7 @@ resource "aws_iam_role_policy" "s3_upload_policy" {
           "s3:AbortMultipartUpload",
           "s3:ListMultipartUploadParts"
         ],
-        Resource = "${aws_s3_bucket.file_share.arn}/*"
+        Resource = "${aws_s3_bucket.file_share_storage.arn}/*"
       }
     ]
   })
@@ -68,7 +68,7 @@ resource "aws_lambda_function" "upload_url_lambda" {
 
   environment {
     variables = {
-        BUCKET_NAME = aws_s3_bucket.file_share.bucket
+        BUCKET_NAME = aws_s3_bucket.file_share_storage.bucket
     }
   }
 }

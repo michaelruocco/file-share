@@ -1,16 +1,16 @@
-resource "aws_s3_bucket" "file_share" {
-  bucket = var.bucket_name
+resource "aws_s3_bucket" "file_share_storage" {
+  bucket = "file-share-storage-${var.environment}-${var.aws_region}-${data.aws_caller_identity.current.account_id}"
 
   force_destroy = true
 
   tags = {
     Project     = "file-share"
-    Environment = "dev"
+    Environment = var.environment
   }
 }
 
-resource "aws_s3_bucket_public_access_block" "file_share" {
-  bucket = aws_s3_bucket.file_share.id
+resource "aws_s3_bucket_public_access_block" "file_share_storage" {
+  bucket = aws_s3_bucket.file_share_storage.id
 
   block_public_acls       = true
   block_public_policy     = true
@@ -18,8 +18,8 @@ resource "aws_s3_bucket_public_access_block" "file_share" {
   restrict_public_buckets = true
 }
 
-resource "aws_s3_bucket_server_side_encryption_configuration" "file_share" {
-  bucket = aws_s3_bucket.file_share.id
+resource "aws_s3_bucket_server_side_encryption_configuration" "file_share_storage" {
+  bucket = aws_s3_bucket.file_share_storage.id
 
   rule {
     apply_server_side_encryption_by_default {
@@ -29,7 +29,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "file_share" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "file_expiry" {
-  bucket = aws_s3_bucket.file_share.id
+  bucket = aws_s3_bucket.file_share_storage.id
 
   rule {
     id     = "delete-old-files"
@@ -55,7 +55,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "file_expiry" {
 }
 
 resource "aws_s3_bucket_cors_configuration" "file_share_cors" {
-  bucket = aws_s3_bucket.file_share.id
+  bucket = aws_s3_bucket.file_share_storage.id
 
   cors_rule {
     allowed_headers = ["*"]

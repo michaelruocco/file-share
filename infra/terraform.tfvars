@@ -1,1 +1,0 @@
-bucket_name = "mruocco-file-share-dev"

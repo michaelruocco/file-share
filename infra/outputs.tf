@@ -1,5 +1,5 @@
-output "bucket_name" {
-  value = aws_s3_bucket.file_share.bucket
+output "storage_bucket_name" {
+  value = aws_s3_bucket.file_share_storage.bucket
 }
 
 output "upload_url_lambda_name" {

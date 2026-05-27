@@ -3,6 +3,7 @@ variable "aws_region" {
   default = "eu-west-2"
 }
 
-variable "bucket_name" {
-  type = string
+variable "environment" {
+  type    = string
+  default = "dev"
 }
