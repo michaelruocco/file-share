@@ -1,32 +1,16 @@
-import {
-  RouteDefinition,
-  RouteHandler,
-  RouteParams,
-} from "./types";
+import { RouteDefinition, RouteHandler, RouteParams } from './types';
 
-export function route(
-  method: string,
-  path: string,
-  handler: RouteHandler
-): RouteDefinition {
+export function route(method: string, path: string, handler: RouteHandler): RouteDefinition {
   return {
     method,
     path,
-    handler,
+    handler
   };
 }
 
-export function matchRoute(
-  method: string,
-  path: string,
-  routes: RouteDefinition[]
-) {
+export function matchRoute(method: string, path: string, routes: RouteDefinition[]) {
   for (const route of routes) {
-    const matched = matchRouteDefinition(
-      method,
-      path,
-      route
-    );
+    const matched = matchRouteDefinition(method, path, route);
 
     if (matched) {
       return matched;
@@ -36,11 +20,7 @@ export function matchRoute(
   return null;
 }
 
-function matchRouteDefinition(
-  method: string,
-  path: string,
-  route: RouteDefinition
-) {
+function matchRouteDefinition(method: string, path: string, route: RouteDefinition) {
   if (route.method !== method) {
     return null;
   }
@@ -48,51 +28,29 @@ function matchRouteDefinition(
   const routeSegments = toSegments(route.path);
   const pathSegments = toSegments(path);
 
-  if (
-    !hasMatchingSegmentCount(
-      routeSegments,
-      pathSegments
-    )
-  ) {
+  if (!hasMatchingSegmentCount(routeSegments, pathSegments)) {
     return null;
   }
 
-  if (
-    !segmentsMatch(
-      routeSegments,
-      pathSegments
-    )
-  ) {
+  if (!segmentsMatch(routeSegments, pathSegments)) {
     return null;
   }
 
   return {
     handler: route.handler,
-    params: toParams(
-      routeSegments,
-      pathSegments
-    ),
+    params: toParams(routeSegments, pathSegments)
   };
 }
 
 function toSegments(path: string): string[] {
-  return path.split("/").filter(Boolean);
+  return path.split('/').filter(Boolean);
 }
 
-function hasMatchingSegmentCount(
-  routeSegments: string[],
-  pathSegments: string[]
-): boolean {
-  return (
-    routeSegments.length ===
-    pathSegments.length
-  );
+function hasMatchingSegmentCount(routeSegments: string[], pathSegments: string[]): boolean {
+  return routeSegments.length === pathSegments.length;
 }
 
-function segmentsMatch(
-  routeSegments: string[],
-  pathSegments: string[]
-): boolean {
+function segmentsMatch(routeSegments: string[], pathSegments: string[]): boolean {
   for (let i = 0; i < routeSegments.length; i++) {
     const routeSegment = routeSegments[i];
     const pathSegment = pathSegments[i];
@@ -109,10 +67,7 @@ function segmentsMatch(
   return true;
 }
 
-function toParams(
-  routeSegments: string[],
-  pathSegments: string[]
-): RouteParams {
+function toParams(routeSegments: string[], pathSegments: string[]): RouteParams {
   const params: RouteParams = {};
 
   for (let i = 0; i < routeSegments.length; i++) {
@@ -122,17 +77,14 @@ function toParams(
       continue;
     }
 
-    params[toParamName(routeSegment)] =
-      pathSegments[i];
+    params[toParamName(routeSegment)] = pathSegments[i];
   }
 
   return params;
 }
 
-function isRouteParameter(
-  segment: string
-): boolean {
-  return segment.startsWith(":");
+function isRouteParameter(segment: string): boolean {
+  return segment.startsWith(':');
 }
 
 function toParamName(segment: string): string {

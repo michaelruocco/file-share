@@ -10,33 +10,32 @@ export function largeBinaryFilePath(): string {
   return path.resolve(__dirname, '..', 'files', 'test-multipart.bin');
 }
 
-
 export async function createUploadUrl(filename: string, contentType: string): Promise<APIResponse> {
-    const api = await createApiContext();
-    try {
-      return await api.post('/upload-urls', {
-        data: {
-          filename,
-          contentType,
-        }
-      });
-    } finally {
-      api.dispose()
-    }
+  const api = await createApiContext();
+  try {
+    return await api.post('/upload-urls', {
+      data: {
+        filename,
+        contentType
+      }
+    });
+  } finally {
+    api.dispose();
+  }
 }
 
 export async function createDownloadUrl(key: string, contentType: string): Promise<APIResponse> {
-    const api = await createApiContext();
-    try {
-      return await api.post('/download-urls', {
-        data: {
-          key,
-          contentType,
-        }
-      });
-    } finally {
-      api.dispose();
-    }
+  const api = await createApiContext();
+  try {
+    return await api.post('/download-urls', {
+      data: {
+        key,
+        contentType
+      }
+    });
+  } finally {
+    api.dispose();
+  }
 }
 
 export async function createApiContext(): Promise<APIRequestContext> {
@@ -54,14 +53,14 @@ export async function readAndUploadFile(
   filePath: string
 ): Promise<Response> {
   const fileBuffer = readFileSync(filePath);
-  return doUpload(
-    uploadUrl,
-    contentType,
-    fileBuffer
-  );
+  return doUpload(uploadUrl, contentType, fileBuffer);
 }
 
-export async function doUpload(uploadUrl: string, contentType: string, body: Buffer): Promise<Response> {
+export async function doUpload(
+  uploadUrl: string,
+  contentType: string,
+  body: Buffer
+): Promise<Response> {
   return await fetch(uploadUrl, {
     method: 'PUT',
     headers: {
@@ -73,7 +72,6 @@ export async function doUpload(uploadUrl: string, contentType: string, body: Buf
 
 export async function doDownload(downloadUrl: string): Promise<Response> {
   return await fetch(downloadUrl, {
-    method: 'GET',
+    method: 'GET'
   });
 }
-

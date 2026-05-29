@@ -1,1 +1,2 @@
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://t08qceavmb.execute-api.eu-west-2.amazonaws.com";
+export const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || 'https://t08qceavmb.execute-api.eu-west-2.amazonaws.com';

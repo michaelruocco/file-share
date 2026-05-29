@@ -1,5 +1,11 @@
 import { test, expect, APIResponse } from '@playwright/test';
-import { largeBinaryFilePath, createApiContext, doUpload, createDownloadUrl, doDownload } from './fixtures';
+import {
+  largeBinaryFilePath,
+  createApiContext,
+  doUpload,
+  createDownloadUrl,
+  doDownload
+} from './fixtures';
 import { readFileSync } from 'fs';
 
 test('multipart upload', async () => {
@@ -49,7 +55,10 @@ test('multipart upload', async () => {
   expect(completeMultipartResponse.ok()).toBeTruthy();
 
   const completeMultipartResponseBody = await completeMultipartResponse.json();
-  const createDownloadUrlResponse = await createDownloadUrl(completeMultipartResponseBody.key, contentType);
+  const createDownloadUrlResponse = await createDownloadUrl(
+    completeMultipartResponseBody.key,
+    contentType
+  );
   expect(createDownloadUrlResponse.ok()).toBeTruthy();
 
   const createDownloadUrlBody = await createDownloadUrlResponse.json();
@@ -62,23 +71,13 @@ test('multipart upload', async () => {
   expect(downloadedBuffer).toEqual(originalBuffer);
 });
 
-function toChunks(
-  filePath: string,
-  chunkSizeMb: number
-): Buffer[] {
+function toChunks(filePath: string, chunkSizeMb: number): Buffer[] {
   const fileBuffer = readFileSync(filePath);
   const chunkSizeBytes = chunkSizeMb * 1024 * 1024;
   const chunks: Buffer[] = [];
-  
-  for (
-    let offset = 0;
-    offset < fileBuffer.length;
-    offset += chunkSizeBytes
-  ) {
-    const chunk = fileBuffer.subarray(
-      offset,
-      offset + chunkSizeBytes
-    );
+
+  for (let offset = 0; offset < fileBuffer.length; offset += chunkSizeBytes) {
+    const chunk = fileBuffer.subarray(offset, offset + chunkSizeBytes);
     chunks.push(chunk);
   }
 
@@ -86,32 +85,39 @@ function toChunks(
   return chunks;
 }
 
-export async function createMultipartUpload(filename: string, contentType: string): Promise<APIResponse> {
-    const api = await createApiContext();
-    try {
-      return await api.post('/multipart-uploads', {
-        data: {
-          filename,
-          contentType,
-        }
-      });
-    } finally {
-      api.dispose()
-    }
+export async function createMultipartUpload(
+  filename: string,
+  contentType: string
+): Promise<APIResponse> {
+  const api = await createApiContext();
+  try {
+    return await api.post('/multipart-uploads', {
+      data: {
+        filename,
+        contentType
+      }
+    });
+  } finally {
+    api.dispose();
+  }
 }
 
-export async function createMultipartPartUploadUrl(uploadId: string, key: string, number: number): Promise<APIResponse> {
-    const api = await createApiContext();
-    try {
-      return await api.post(`multipart-uploads/${uploadId}/part-urls`, {
-        data: {
-          key,
-          number,
-        }
-      });
-    } finally {
-      api.dispose()
-    }
+export async function createMultipartPartUploadUrl(
+  uploadId: string,
+  key: string,
+  number: number
+): Promise<APIResponse> {
+  const api = await createApiContext();
+  try {
+    return await api.post(`multipart-uploads/${uploadId}/part-urls`, {
+      data: {
+        key,
+        number
+      }
+    });
+  } finally {
+    api.dispose();
+  }
 }
 
 export type MultipartUploadRequestPart = {
@@ -119,16 +125,20 @@ export type MultipartUploadRequestPart = {
   etag: string;
 };
 
-export async function completeMultipartUpload(uploadId: string, key: string, parts: MultipartUploadRequestPart[]): Promise<APIResponse> {
-    const api = await createApiContext();
-    try {
-      return await api.post(`multipart-uploads/${uploadId}`, {
-        data: {
-          key,
-          parts
-        }
-      });
-    } finally {
-      api.dispose()
-    }
+export async function completeMultipartUpload(
+  uploadId: string,
+  key: string,
+  parts: MultipartUploadRequestPart[]
+): Promise<APIResponse> {
+  const api = await createApiContext();
+  try {
+    return await api.post(`multipart-uploads/${uploadId}`, {
+      data: {
+        key,
+        parts
+      }
+    });
+  } finally {
+    api.dispose();
+  }
 }

@@ -1,12 +1,16 @@
-import { test, expect, APIResponse } from "@playwright/test";
-import { textFilePath, createUploadUrl, readAndUploadFile, createApiContext } from "./fixtures";
+import { test, expect, APIResponse } from '@playwright/test';
+import { textFilePath, createUploadUrl, readAndUploadFile, createApiContext } from './fixtures';
 
-test("list files", async () => {
+test('list files', async () => {
   const contentType = 'text/plain';
   const filePath = textFilePath();
   const createUploadUrlResponse = await createUploadUrl(filePath, contentType);
   const createUploadUrlBody = await createUploadUrlResponse.json();
-  const uploadResponse = await readAndUploadFile(createUploadUrlBody.uploadUrl, contentType, filePath);
+  const uploadResponse = await readAndUploadFile(
+    createUploadUrlBody.uploadUrl,
+    contentType,
+    filePath
+  );
   expect(uploadResponse.ok).toBeTruthy();
 
   const filesResponse = await getFiles();
@@ -21,10 +25,10 @@ test("list files", async () => {
 });
 
 export async function getFiles(): Promise<APIResponse> {
-    const api = await createApiContext();
-    try {
-      return await api.get('/files');
-    } finally {
-      api.dispose()
-    }
+  const api = await createApiContext();
+  try {
+    return await api.get('/files');
+  } finally {
+    api.dispose();
+  }
 }

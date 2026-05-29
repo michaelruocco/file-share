@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState } from 'react';
 
-import { uploadFile } from "../api/files";
-import type { UploadProgress } from "../api/multipart";
-import { formatBytes } from "../util/format";
+import { uploadFile } from '../api/files';
+import type { UploadProgress } from '../api/multipart';
+import { formatBytes } from '../util/format';
 
 type Props = {
   onUploaded: () => void;
@@ -32,39 +32,34 @@ export function formatDuration(seconds: number): string {
   if (m > 0) parts.push(`${m}m`);
   if (s > 0 || parts.length === 0) parts.push(`${s}s`);
 
-  return parts.join(" ");
+  return parts.join(' ');
 }
 
-export default function UploadForm({onUploaded}: Props) {
+export default function UploadForm({ onUploaded }: Props) {
   const [file, setFile] = useState<File | null>(null);
-  const [result, setResult] = useState<string>("");
-  const [error, setError] = useState<string>("");
+  const [result, setResult] = useState<string>('');
+  const [error, setError] = useState<string>('');
   const [progress, setProgress] = useState<UploadProgress | null>(null);
 
   async function handleUpload() {
     setProgress(null);
-    setResult("");
-    setError("");
+    setResult('');
+    setError('');
 
     if (!file) {
-      setError("Please choose a file");
+      setError('Please choose a file');
       return;
     }
 
     try {
-      const uploadData = await uploadFile(
-        file,
-        (progress) => { setProgress(progress); }
-      );
+      const uploadData = await uploadFile(file, (progress) => {
+        setProgress(progress);
+      });
       setResult(uploadData.key);
       onUploaded();
     } catch (err) {
       console.error(err);
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Upload failed"
-      );
+      setError(err instanceof Error ? err.message : 'Upload failed');
     } finally {
       setProgress(null);
     }
@@ -72,76 +67,51 @@ export default function UploadForm({onUploaded}: Props) {
 
   return (
     <div className="panel upload-panel">
-        <div className="upload-title">
-        Upload files
-        </div>
+      <div className="upload-title">Upload files</div>
 
-        <div className="upload-subtitle">
-        Choose a file to upload
-        </div>
+      <div className="upload-subtitle">Choose a file to upload</div>
 
-        <input
+      <input
         id="file-input"
         type="file"
         className="hidden-input"
-        onChange={(e) =>
-            setFile(e.target.files?.[0] ?? null)
-        }
-        />
+        onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+      />
 
-        <button
+      <button
         className="primary-button"
-        onClick={() =>
-            document
-            .getElementById("file-input")
-            ?.click()
-        }
-        >
+        onClick={() => document.getElementById('file-input')?.click()}
+      >
         Select file
-        </button>
+      </button>
 
-        {file && (
+      {file && (
         <div>
-            Selected:
-            {" "}
-            <strong>{file.name}</strong>
+          Selected: <strong>{file.name}</strong>
         </div>
-        )}
+      )}
 
-        {progress && (
-            <div className="progress-wrapper">
-                <div
-                className="progress-bar"
-                style={{
-                    width: `${progress.percentage}%`
-                }}
-                />
-                <span>
-                  {formatProgress(progress)}
-                </span>
-            </div>
-        )}
-
-        {error && (
-        <div className="error">
-            {error}
+      {progress && (
+        <div className="progress-wrapper">
+          <div
+            className="progress-bar"
+            style={{
+              width: `${progress.percentage}%`
+            }}
+          />
+          <span>{formatProgress(progress)}</span>
         </div>
-        )}
+      )}
 
-        {result && (
-        <div className="success">
-            Upload successful
-        </div>
-        )}
+      {error && <div className="error">{error}</div>}
 
-        {file && (
-        <button
-            className="primary-button"
-            onClick={handleUpload}
-        >
-            Upload
+      {result && <div className="success">Upload successful</div>}
+
+      {file && (
+        <button className="primary-button" onClick={handleUpload}>
+          Upload
         </button>
-        )}
+      )}
     </div>
   );
 }

@@ -1,10 +1,8 @@
-import { APIGatewayProxyEventV2 } from "aws-lambda";
+import { APIGatewayProxyEventV2 } from 'aws-lambda';
 
-export function toBody<T>(
-  event: APIGatewayProxyEventV2
-): T {
+export function toBody<T>(event: APIGatewayProxyEventV2): T {
   if (!event.body) {
-    throw new Error("Missing event body");
+    throw new Error('Missing event body');
   }
 
   const body = JSON.parse(event.body) as T;
@@ -12,7 +10,6 @@ export function toBody<T>(
   return body;
 }
 
-
 export function pathToUploadId(path: string): string {
-  return path.split("/")[2];
+  return path.split('/')[2];
 }

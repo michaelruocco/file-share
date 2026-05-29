@@ -1,10 +1,7 @@
-import {
-  CompleteMultipartUploadCommand,
-  CompletedPart,
-} from "@aws-sdk/client-s3";
-import { APIGatewayProxyEventV2 } from "aws-lambda";
-import { s3, bucket } from "../s3";
-import { pathToUploadId, toBody } from "../common";
+import { CompleteMultipartUploadCommand, CompletedPart } from '@aws-sdk/client-s3';
+import { APIGatewayProxyEventV2 } from 'aws-lambda';
+import { s3, bucket } from '../s3';
+import { pathToUploadId, toBody } from '../common';
 
 type CompleteMultipartUploadRequest = {
   key: string;
@@ -28,8 +25,8 @@ export async function completeMultipartUploadHandler(
     Key: body.key,
     UploadId: uploadId,
     MultipartUpload: {
-      Parts: toCompletedParts(body.parts),
-    },
+      Parts: toCompletedParts(body.parts)
+    }
   });
 
   const response = await s3.send(command);
@@ -39,20 +36,18 @@ export async function completeMultipartUploadHandler(
 
 function validate(body: CompleteMultipartUploadRequest): void {
   if (!body.key) {
-    throw new Error("Missing key");
+    throw new Error('Missing key');
   }
   if (!body.parts || body.parts.length === 0) {
-    throw new Error("Missing parts");
+    throw new Error('Missing parts');
   }
 }
 
-function toCompletedParts(
-  parts: CompleteMultipartUploadRequestPart[]
-): CompletedPart[] {
+function toCompletedParts(parts: CompleteMultipartUploadRequestPart[]): CompletedPart[] {
   return parts
     .sort((a, b) => a.number - b.number)
-    .map(part => ({
+    .map((part) => ({
       PartNumber: part.number,
-      ETag: part.etag,
+      ETag: part.etag
     }));
 }
