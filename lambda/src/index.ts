@@ -1,4 +1,8 @@
-import { APIGatewayProxyHandlerV2, APIGatewayProxyEventV2 } from 'aws-lambda';
+import {
+  APIGatewayProxyHandlerV2,
+  APIGatewayProxyEventV2,
+  APIGatewayProxyStructuredResultV2
+} from 'aws-lambda';
 import { uploadHandler } from './upload';
 import { downloadHandler } from './download';
 import { getFilesHandler } from './files';
@@ -6,8 +10,6 @@ import { createMultipartUploadUrlHandler } from './multipart/start';
 import { createMultipartUploadPartUrlHandler } from './multipart/part';
 import { completeMultipartUploadHandler } from './multipart/complete';
 import { route, matchRoute } from './router/router';
-
-type Handler = (event: APIGatewayProxyEventV2) => Promise<any>;
 
 const routes = [
   route('POST', '/upload-urls', uploadHandler),
@@ -25,46 +27,45 @@ const routes = [
 
 export const handler: APIGatewayProxyHandlerV2 = async (
   event: APIGatewayProxyEventV2
-): Promise<any> => {
+): Promise<APIGatewayProxyStructuredResultV2> => {
   try {
     console.log(`recieved event ${JSON.stringify(event)}`);
     const method = event.requestContext.http.method;
     const path = event.requestContext.http.path;
 
-    const route = matchRoute(method, path, routes);
+    const matchedRoute = matchRoute(method, path, routes);
 
-    if (!route) {
+    if (!matchedRoute) {
       return notFound();
     }
 
-    const response = await route.handler(event, route.params);
+    const response = await matchedRoute.handler(event, matchedRoute.params);
 
     return toSuccessResponse(response);
-  } catch (err: any) {
+  } catch (err: unknown) {
     return handleError(err);
   }
 };
 
-function notFound(): any {
+function notFound(): APIGatewayProxyStructuredResultV2 {
   return {
     statusCode: 404,
     body: JSON.stringify({ message: 'not found' })
   };
 }
 
-function toSuccessResponse(result: any): any {
+function toSuccessResponse(result: unknown): APIGatewayProxyStructuredResultV2 {
   return {
     statusCode: 200,
     body: JSON.stringify(result)
   };
 }
 
-function handleError(err: any): any {
+function handleError(err: unknown): APIGatewayProxyStructuredResultV2 {
   console.error(err);
+  const message = err instanceof Error ? err.message : 'server error';
   return {
     statusCode: 500,
-    body: JSON.stringify({
-      message: err?.message || 'server error'
-    })
+    body: JSON.stringify({ message })
   };
 }

@@ -8,10 +8,15 @@ type CreateMultipartPartUploadRequest = {
   contentType: string;
 };
 
+type CreateMultipartPartUploadResponse = {
+  uploadId: string | undefined;
+  key: string;
+};
+
 export async function createMultipartUploadUrlHandler(
   event: APIGatewayProxyEventV2,
-  params: Record<string, string>
-): Promise<any> {
+  _params: Record<string, string>
+): Promise<CreateMultipartPartUploadResponse> {
   const body = toBody<CreateMultipartPartUploadRequest>(event);
   const key = toObjectKey(body.filename);
   const command = new CreateMultipartUploadCommand({

@@ -52,8 +52,8 @@ function hasMatchingSegmentCount(routeSegments: string[], pathSegments: string[]
 
 function segmentsMatch(routeSegments: string[], pathSegments: string[]): boolean {
   for (let i = 0; i < routeSegments.length; i++) {
-    const routeSegment = routeSegments[i];
-    const pathSegment = pathSegments[i];
+    const routeSegment = routeSegments[i]!;
+    const pathSegment = pathSegments[i]!;
 
     if (isRouteParameter(routeSegment)) {
       continue;
@@ -71,13 +71,13 @@ function toParams(routeSegments: string[], pathSegments: string[]): RouteParams 
   const params: RouteParams = {};
 
   for (let i = 0; i < routeSegments.length; i++) {
-    const routeSegment = routeSegments[i];
+    const routeSegment = routeSegments[i]!;
 
     if (!isRouteParameter(routeSegment)) {
       continue;
     }
 
-    params[toParamName(routeSegment)] = pathSegments[i];
+    params[toParamName(routeSegment)] = pathSegments[i]!;
   }
 
   return params;

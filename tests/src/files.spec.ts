@@ -1,6 +1,12 @@
 import { test, expect, APIResponse } from '@playwright/test';
 import { textFilePath, createUploadUrl, readAndUploadFile, createApiContext } from './fixtures';
 
+type FileSummary = {
+  key: string;
+  size: number;
+  lastModified: string | undefined;
+};
+
 test('list files', async () => {
   const contentType = 'text/plain';
   const filePath = textFilePath();
@@ -16,12 +22,12 @@ test('list files', async () => {
   const filesResponse = await getFiles();
 
   expect(filesResponse.ok()).toBeTruthy();
-  const files = await filesResponse.json();
+  const files = (await filesResponse.json()) as FileSummary[];
   expect(files.length).toBeGreaterThan(0);
 
-  const uploadedFile = files.find((file: any) => file.key === createUploadUrlBody.key);
+  const uploadedFile = files.find((file: FileSummary) => file.key === createUploadUrlBody.key);
   expect(uploadedFile).toBeDefined();
-  expect(uploadedFile.size).toBe(17);
+  expect(uploadedFile?.size).toBe(17);
 });
 
 export async function getFiles(): Promise<APIResponse> {

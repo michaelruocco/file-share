@@ -9,10 +9,15 @@ type CreateUploadUrlRequest = {
   contentType: string;
 };
 
+type CreateUploadUrlResponse = {
+  uploadUrl: string;
+  key: string;
+};
+
 export async function uploadHandler(
   event: APIGatewayProxyEventV2,
-  params: Record<string, string>
-): Promise<any> {
+  _params: Record<string, string>
+): Promise<CreateUploadUrlResponse> {
   const body = toBody<CreateUploadUrlRequest>(event);
   const key = toObjectKey(body.filename);
   const command = toPutObjectCommand(key, body.contentType);

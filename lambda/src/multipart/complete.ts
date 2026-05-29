@@ -13,10 +13,14 @@ type CompleteMultipartUploadRequestPart = {
   etag: string;
 };
 
+type CompleteMultipartUploadResponse = {
+  key: string;
+};
+
 export async function completeMultipartUploadHandler(
   event: APIGatewayProxyEventV2,
-  params: Record<string, string>
-): Promise<any> {
+  _params: Record<string, string>
+): Promise<CompleteMultipartUploadResponse> {
   const uploadId = pathToUploadId(event.requestContext.http.path);
   const body = toBody<CompleteMultipartUploadRequest>(event);
   validate(body);
@@ -29,7 +33,7 @@ export async function completeMultipartUploadHandler(
     }
   });
 
-  const response = await s3.send(command);
+  await s3.send(command);
 
   return { key: body.key };
 }

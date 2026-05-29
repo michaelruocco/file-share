@@ -9,10 +9,14 @@ type CreateMultipartPartUrlRequest = {
   number: number;
 };
 
+type CreateMultipartPartUrlResponse = {
+  uploadUrl: string;
+};
+
 export async function createMultipartUploadPartUrlHandler(
   event: APIGatewayProxyEventV2,
-  params: Record<string, string>
-): Promise<any> {
+  _params: Record<string, string>
+): Promise<CreateMultipartPartUrlResponse> {
   const body = toBody<CreateMultipartPartUrlRequest>(event);
   const uploadId = pathToUploadId(event.requestContext.http.path);
   const command = new UploadPartCommand({

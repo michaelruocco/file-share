@@ -8,10 +8,14 @@ type CreateDownloadUrlRequest = {
   key: string;
 };
 
+type CreateDownloadUrlResponse = {
+  downloadUrl: string;
+};
+
 export async function downloadHandler(
   event: APIGatewayProxyEventV2,
-  params: Record<string, string>
-): Promise<any> {
+  _params: Record<string, string>
+): Promise<CreateDownloadUrlResponse> {
   const body = toBody<CreateDownloadUrlRequest>(event);
   const key = body.key;
 

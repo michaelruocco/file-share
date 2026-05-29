@@ -1,18 +1,17 @@
 import { _Object, ListObjectsV2Command } from '@aws-sdk/client-s3';
 import { s3, bucket } from './s3';
-import { toBody } from './common';
 import { APIGatewayProxyEventV2 } from 'aws-lambda';
 
 type FileSummary = {
   key: string;
   size: number;
-  lastModified?: Date;
+  lastModified: string | undefined;
 };
 
 export async function getFilesHandler(
-  event: APIGatewayProxyEventV2,
-  params: Record<string, string>
-): Promise<any> {
+  _event: APIGatewayProxyEventV2,
+  _params: Record<string, string>
+): Promise<FileSummary[]> {
   const command = new ListObjectsV2Command({ Bucket: bucket });
   const response = await s3.send(command);
   const files: FileSummary[] = (response.Contents ?? [])
@@ -25,6 +24,6 @@ function toFileSummary(object: _Object): FileSummary {
   return {
     key: object.Key!,
     size: object.Size ?? 0,
-    lastModified: object.LastModified
+    lastModified: object.LastModified?.toISOString()
   };
 }
