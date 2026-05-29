@@ -5,3 +5,5 @@
 node_modules/
 
 lambda/dist/
+
+tests/test_results/
