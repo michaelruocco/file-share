@@ -10,8 +10,8 @@ export default function App() {
   const [files, setFiles] = useState<FileSummary[]>([]);
 
   async function refreshFiles() {
-    const files = await getFiles();
-    setFiles(files);
+    const response = await getFiles();
+    setFiles(response.files);
   }
 
   async function deleteFileAndRefresh(key: string) {

@@ -8,7 +8,12 @@ export type FileSummary = {
   lastModified?: string;
 };
 
-export async function getFiles(): Promise<FileSummary[]> {
+type GetFilesResponse = {
+  files: FileSummary[];
+  nextCursor?: string | undefined;
+};
+
+export async function getFiles(): Promise<GetFilesResponse> {
   const response = await fetch(`${API_BASE_URL}/files`);
 
   if (!response.ok) {
