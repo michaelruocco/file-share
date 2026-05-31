@@ -6,23 +6,21 @@ import {
 import { uploadHandler } from './upload';
 import { downloadHandler } from './download';
 import { getFilesHandler } from './files';
+import { deleteFilesHandler } from './delete';
 import { createMultipartUploadUrlHandler } from './multipart/start';
 import { createMultipartUploadPartUrlHandler } from './multipart/part';
 import { completeMultipartUploadHandler } from './multipart/complete';
 import { route, matchRoute } from './router/router';
 
+
 const routes = [
   route('POST', '/upload-urls', uploadHandler),
-
   route('POST', '/download-urls', downloadHandler),
-
   route('POST', '/multipart-uploads', createMultipartUploadUrlHandler),
-
   route('POST', '/multipart-uploads/:uploadId/part-urls', createMultipartUploadPartUrlHandler),
-
   route('POST', '/multipart-uploads/:uploadId', completeMultipartUploadHandler),
-
-  route('GET', '/files', getFilesHandler)
+  route('GET', '/files', getFilesHandler),
+  route('DELETE', '/files', deleteFilesHandler)
 ];
 
 export const handler: APIGatewayProxyHandlerV2 = async (

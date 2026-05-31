@@ -11,5 +11,11 @@ export function toBody<T>(event: APIGatewayProxyEventV2): T {
 }
 
 export function pathToUploadId(path: string): string {
-  return path.split('/')[2];
+  const uploadId = path.split('/')[2];
+
+  if (!uploadId) {
+    throw new Error('Missing upload id');
+  }
+
+  return uploadId;
 }

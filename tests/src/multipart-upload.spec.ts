@@ -4,7 +4,7 @@ import {
   createApiContext,
   doUpload,
   createDownloadUrl,
-  doDownload
+  doDownload,
 } from './fixtures';
 import { readFileSync } from 'fs';
 

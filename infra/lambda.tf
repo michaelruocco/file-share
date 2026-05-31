@@ -45,7 +45,8 @@ resource "aws_iam_role_policy" "s3_upload_policy" {
           "s3:GetObject",
           "s3:CreateMultipartUpload",
           "s3:AbortMultipartUpload",
-          "s3:ListMultipartUploadParts"
+          "s3:ListMultipartUploadParts",
+          "s3:DeleteObject",
         ],
         Resource = "${aws_s3_bucket.file_share_storage.arn}/*"
       }

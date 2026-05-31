@@ -75,3 +75,18 @@ export async function doDownload(downloadUrl: string): Promise<Response> {
     method: 'GET'
   });
 }
+
+export async function getFiles(): Promise<APIResponse> {
+  const api = await createApiContext();
+  try {
+    return await api.get('/files');
+  } finally {
+    api.dispose();
+  }
+}
+
+export type FileSummary = {
+  key: string;
+  size: number;
+  lastModified: string | undefined;
+};
