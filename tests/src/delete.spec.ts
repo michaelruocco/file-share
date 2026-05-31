@@ -61,7 +61,8 @@ test('delete multiple files', async () => {
 export async function getFilesSummaries(): Promise<FileSummary[]> {
   const filesResponse = await getFiles();
   expect(filesResponse.ok()).toBeTruthy();
-  return (await filesResponse.json()) as FileSummary[];
+  const filesResponseBody = await filesResponse.json();
+  return filesResponseBody.files as FileSummary[];
 }
 
 export async function deleteFile(key: string): Promise<APIResponse> {

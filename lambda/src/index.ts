@@ -12,7 +12,6 @@ import { createMultipartUploadPartUrlHandler } from './multipart/part';
 import { completeMultipartUploadHandler } from './multipart/complete';
 import { route, matchRoute } from './router/router';
 
-
 const routes = [
   route('POST', '/upload-urls', uploadHandler),
   route('POST', '/download-urls', downloadHandler),
@@ -53,6 +52,7 @@ function notFound(): APIGatewayProxyStructuredResultV2 {
 }
 
 function toSuccessResponse(result: unknown): APIGatewayProxyStructuredResultV2 {
+  console.log(`returning success response ${JSON.stringify(result)}`);
   return {
     statusCode: 200,
     body: JSON.stringify(result)

@@ -8,16 +8,30 @@ type FileSummary = {
   lastModified: string | undefined;
 };
 
+type GetFilesResponse = {
+  files: FileSummary[];
+  nextCursor?: string | undefined;
+};
+
 export async function getFilesHandler(
-  _event: APIGatewayProxyEventV2,
+  event: APIGatewayProxyEventV2,
   _params: Record<string, string>
-): Promise<FileSummary[]> {
-  const command = new ListObjectsV2Command({ Bucket: bucket });
+): Promise<GetFilesResponse> {
+  const limit = Number(event.queryStringParameters?.limit ?? 20);
+  const cursor = event.queryStringParameters?.cursor;
+  const command = new ListObjectsV2Command({
+    Bucket: bucket,
+    MaxKeys: limit,
+    ContinuationToken: cursor
+  });
   const response = await s3.send(command);
   const files: FileSummary[] = (response.Contents ?? [])
     .filter((object) => object.Key)
     .map((object) => toFileSummary(object));
-  return files;
+  return {
+    files: files,
+    nextCursor: response.NextContinuationToken
+  };
 }
 
 function toFileSummary(object: _Object): FileSummary {

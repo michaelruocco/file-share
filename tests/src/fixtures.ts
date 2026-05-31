@@ -85,6 +85,24 @@ export async function getFiles(): Promise<APIResponse> {
   }
 }
 
+export async function getPaginatedFiles(
+  limit: number,
+  nextCursor?: string | undefined
+): Promise<APIResponse> {
+  const api = await createApiContext();
+  const params: Record<string, string> = {
+    limit: String(limit)
+  };
+  if (nextCursor) {
+    params.cursor = nextCursor;
+  }
+  try {
+    return await api.get('files', { params });
+  } finally {
+    api.dispose();
+  }
+}
+
 export type FileSummary = {
   key: string;
   size: number;

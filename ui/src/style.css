@@ -121,6 +121,11 @@ body {
   font-size: 14px;
 }
 
+.file-actions {
+  display: flex;
+  gap: 12px;
+}
+
 .secondary-button {
   border: 1px solid #c9d5e6;
   background: white;

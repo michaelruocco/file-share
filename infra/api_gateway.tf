@@ -12,7 +12,8 @@ resource "aws_apigatewayv2_api" "http_api" {
       "GET",
       "POST",
       "PUT",
-      "OPTIONS"
+      "OPTIONS",
+      "DELETE"
     ]
 
     allow_headers = [

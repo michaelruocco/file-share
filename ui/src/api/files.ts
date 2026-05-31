@@ -92,3 +92,9 @@ export async function createDownloadUrl(key: string) {
 
   return response.json();
 }
+
+export async function deleteFile(key: string): Promise<void> {
+  await fetch(`${API_BASE_URL}/files?key=${key}`, {
+    method: 'DELETE'
+  });
+}

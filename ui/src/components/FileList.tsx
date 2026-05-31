@@ -4,9 +4,10 @@ import { formatBytes } from '../util/format';
 type Props = {
   files: FileSummary[];
   onDownload: (key: string) => void;
+  onDelete: (key: string) => void;
 };
 
-export default function FileList({ files, onDownload }: Props) {
+export default function FileList({ files, onDownload, onDelete }: Props) {
   if (files.length === 0) {
     return <p>No uploaded files</p>;
   }
@@ -30,9 +31,14 @@ export default function FileList({ files, onDownload }: Props) {
               <div className="file-meta">{formatBytes(file.size)}</div>
             </div>
 
-            <button className="secondary-button" onClick={() => onDownload(file.key)}>
-              Download
-            </button>
+            <div className="file-actions">
+              <button className="secondary-button" onClick={() => onDownload(file.key)}>
+                Download
+              </button>
+              <button className="secondary-button" onClick={() => onDelete(file.key)}>
+                Delete
+              </button>
+            </div>
           </div>
         ))}
       </div>
