@@ -37,9 +37,10 @@ upload_url_lambda_name = "file-share-upload-dev-eu-west-2-327122349051"
 ```
 
 to deploy the front end you need to move back up out of the `/infra` directory, then
-into the ui directory where you can build the ui code with the following commands:
+into the `/ui` directory where you can build the ui code with the following commands:
 
 ```bash
+cd ui
 npm install
 npm run build
 ```
