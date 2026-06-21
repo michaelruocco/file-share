@@ -1,5 +1,5 @@
 import { CompleteMultipartUploadCommand, CompletedPart } from '@aws-sdk/client-s3';
-import { s3, bucket } from '../s3';
+import { s3, bucket } from '../../s3';
 
 export type CompleteMultipartUploadRequest = {
   key: string;

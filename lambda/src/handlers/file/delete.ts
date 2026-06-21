@@ -4,7 +4,7 @@ import {
   ListObjectsV2CommandOutput,
   DeleteObjectsCommand
 } from '@aws-sdk/client-s3';
-import { s3, bucket } from './s3';
+import { s3, bucket } from '../../s3';
 
 export async function deleteFilesHandler(key?: string): Promise<void> {
   if (key) {

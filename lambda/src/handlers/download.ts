@@ -1,6 +1,6 @@
 import { GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { s3, bucket } from './s3';
+import { s3, bucket } from '../s3';
 
 export type CreateDownloadUrlRequest = {
   key: string;
@@ -11,7 +11,7 @@ type CreateDownloadUrlResponse = {
 };
 
 export async function downloadHandler(
-  body: CreateDownloadUrlRequest,
+  body: CreateDownloadUrlRequest
 ): Promise<CreateDownloadUrlResponse> {
   const key = body.key;
 

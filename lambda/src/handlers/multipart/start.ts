@@ -1,5 +1,5 @@
 import { CreateMultipartUploadCommand } from '@aws-sdk/client-s3';
-import { s3, bucket, toObjectKey } from '../s3';
+import { s3, bucket, toObjectKey } from '../../s3';
 
 export type CreateMultipartPartUploadRequest = {
   filename: string;
@@ -12,7 +12,7 @@ type CreateMultipartPartUploadResponse = {
 };
 
 export async function createMultipartUploadUrlHandler(
-  body: CreateMultipartPartUploadRequest,
+  body: CreateMultipartPartUploadRequest
 ): Promise<CreateMultipartPartUploadResponse> {
   const key = toObjectKey(body.filename);
   const command = new CreateMultipartUploadCommand({

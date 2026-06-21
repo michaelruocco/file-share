@@ -1,6 +1,6 @@
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { s3, bucket, toObjectKey } from './s3';
+import { s3, bucket, toObjectKey } from '../s3';
 
 export type CreateUploadUrlRequest = {
   filename: string;
@@ -13,7 +13,7 @@ type CreateUploadUrlResponse = {
 };
 
 export async function uploadHandler(
-  body: CreateUploadUrlRequest,
+  body: CreateUploadUrlRequest
 ): Promise<CreateUploadUrlResponse> {
   const key = toObjectKey(body.filename);
   const command = toPutObjectCommand(key, body.contentType);

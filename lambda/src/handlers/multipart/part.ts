@@ -1,6 +1,6 @@
 import { UploadPartCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { s3, bucket } from '../s3';
+import { s3, bucket } from '../../s3';
 
 export type CreateMultipartPartUrlRequest = {
   key: string;
@@ -13,7 +13,7 @@ type CreateMultipartPartUrlResponse = {
 
 export async function createMultipartUploadPartUrlHandler(
   body: CreateMultipartPartUrlRequest,
-  uploadId: string,
+  uploadId: string
 ): Promise<CreateMultipartPartUrlResponse> {
   const command = new UploadPartCommand({
     Bucket: bucket,

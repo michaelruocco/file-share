@@ -1,5 +1,5 @@
 import { _Object, ListObjectsV2Command } from '@aws-sdk/client-s3';
-import { s3, bucket } from './s3';
+import { s3, bucket } from '../../s3';
 
 type FileSummary = {
   key: string;

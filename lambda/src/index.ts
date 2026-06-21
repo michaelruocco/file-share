@@ -4,22 +4,22 @@ import {
   APIGatewayProxyStructuredResultV2
 } from 'aws-lambda';
 import { route, matchRoute } from './router/router';
-import { uploadHandler, CreateUploadUrlRequest } from './upload';
-import { downloadHandler, CreateDownloadUrlRequest } from './download';
-import { getFilesHandler } from './files';
-import { deleteFilesHandler } from './delete';
+import { uploadHandler, CreateUploadUrlRequest } from './handlers/upload';
+import { downloadHandler, CreateDownloadUrlRequest } from './handlers/download';
+import { getFilesHandler } from './handlers/file/get';
+import { deleteFilesHandler } from './handlers/file/delete';
 import {
   createMultipartUploadUrlHandler,
   CreateMultipartPartUploadRequest
-} from './multipart/start';
+} from './handlers/multipart/start';
 import {
   createMultipartUploadPartUrlHandler,
   CreateMultipartPartUrlRequest
-} from './multipart/part';
+} from './handlers/multipart/part';
 import {
   completeMultipartUploadHandler,
   CompleteMultipartUploadRequest
-} from './multipart/complete';
+} from './handlers/multipart/complete';
 
 const routes = [
   route('POST', '/upload-urls', async (event: APIGatewayProxyEventV2) => {
