@@ -1,4 +1,4 @@
-import { RouteDefinition, RouteHandler, RouteParams } from './types';
+import { RouteDefinition, RouteHandler } from './types';
 
 export function route(method: string, path: string, handler: RouteHandler): RouteDefinition {
   return {
@@ -8,38 +8,30 @@ export function route(method: string, path: string, handler: RouteHandler): Rout
   };
 }
 
-export function matchRoute(method: string, path: string, routes: RouteDefinition[]) {
+export function matchRoute(
+  method: string,
+  path: string,
+  routes: RouteDefinition[]
+): RouteHandler | null {
   for (const route of routes) {
-    const matched = matchRouteDefinition(method, path, route);
-
-    if (matched) {
-      return matched;
+    if (routeMatches(method, path, route)) {
+      return route.handler;
     }
   }
-
   return null;
 }
 
-function matchRouteDefinition(method: string, path: string, route: RouteDefinition) {
+function routeMatches(method: string, path: string, route: RouteDefinition): boolean {
   if (route.method !== method) {
-    return null;
+    return false;
   }
-
   const routeSegments = toSegments(route.path);
   const pathSegments = toSegments(path);
-
   if (!hasMatchingSegmentCount(routeSegments, pathSegments)) {
-    return null;
+    return false;
   }
 
-  if (!segmentsMatch(routeSegments, pathSegments)) {
-    return null;
-  }
-
-  return {
-    handler: route.handler,
-    params: toParams(routeSegments, pathSegments)
-  };
+  return segmentsMatch(routeSegments, pathSegments);
 }
 
 function toSegments(path: string): string[] {
@@ -54,12 +46,7 @@ function segmentsMatch(routeSegments: string[], pathSegments: string[]): boolean
   for (let i = 0; i < routeSegments.length; i++) {
     const routeSegment = routeSegments[i]!;
     const pathSegment = pathSegments[i]!;
-
-    if (isRouteParameter(routeSegment)) {
-      continue;
-    }
-
-    if (routeSegment !== pathSegment) {
+    if (!isRouteParameter(routeSegment) && routeSegment !== pathSegment) {
       return false;
     }
   }
@@ -67,26 +54,6 @@ function segmentsMatch(routeSegments: string[], pathSegments: string[]): boolean
   return true;
 }
 
-function toParams(routeSegments: string[], pathSegments: string[]): RouteParams {
-  const params: RouteParams = {};
-
-  for (let i = 0; i < routeSegments.length; i++) {
-    const routeSegment = routeSegments[i]!;
-
-    if (!isRouteParameter(routeSegment)) {
-      continue;
-    }
-
-    params[toParamName(routeSegment)] = pathSegments[i]!;
-  }
-
-  return params;
-}
-
 function isRouteParameter(segment: string): boolean {
   return segment.startsWith(':');
-}
-
-function toParamName(segment: string): string {
-  return segment.slice(1);
 }

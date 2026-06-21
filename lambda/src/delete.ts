@@ -1,20 +1,17 @@
-import { DeleteObjectCommand, ListObjectsV2Command, ListObjectsV2CommandOutput, DeleteObjectsCommand } from '@aws-sdk/client-s3';
+import {
+  DeleteObjectCommand,
+  ListObjectsV2Command,
+  ListObjectsV2CommandOutput,
+  DeleteObjectsCommand
+} from '@aws-sdk/client-s3';
 import { s3, bucket } from './s3';
-import { APIGatewayProxyEventV2 } from 'aws-lambda';
 
-
-
-export async function deleteFilesHandler(
-  event: APIGatewayProxyEventV2,
-  _params: Record<string, string>
-): Promise<void> {
-  const key = event.queryStringParameters?.key;
-
+export async function deleteFilesHandler(key?: string): Promise<void> {
   if (key) {
     await deleteFile(key);
     return;
   }
-  
+
   await deleteAllFiles();
 }
 
@@ -42,9 +39,9 @@ async function deleteAllFiles() {
 
     const contents = response.Contents ?? [];
     const objects = contents
-      .map(object => object.Key)
-      .filter( (key): key is string => key !== undefined )
-      .map(key => ({ Key: key }));
+      .map((object) => object.Key)
+      .filter((key): key is string => key !== undefined)
+      .map((key) => ({ Key: key }));
 
     if (objects.length > 0) {
       await s3.send(
@@ -60,10 +57,8 @@ async function deleteAllFiles() {
       console.debug(`deleted ${objects.length} objects ${JSON.stringify(objects)}`);
     }
 
-    continuationToken =
-      response.NextContinuationToken;
+    continuationToken = response.NextContinuationToken;
   } while (continuationToken);
 
   return deleted;
 }
-

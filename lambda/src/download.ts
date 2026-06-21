@@ -1,10 +1,8 @@
 import { GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { s3, bucket } from './s3';
-import { toBody } from './common';
-import { APIGatewayProxyEventV2 } from 'aws-lambda';
 
-type CreateDownloadUrlRequest = {
+export type CreateDownloadUrlRequest = {
   key: string;
 };
 
@@ -13,10 +11,8 @@ type CreateDownloadUrlResponse = {
 };
 
 export async function downloadHandler(
-  event: APIGatewayProxyEventV2,
-  _params: Record<string, string>
+  body: CreateDownloadUrlRequest,
 ): Promise<CreateDownloadUrlResponse> {
-  const body = toBody<CreateDownloadUrlRequest>(event);
   const key = body.key;
 
   if (!key) {

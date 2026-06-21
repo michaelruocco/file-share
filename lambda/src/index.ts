@@ -3,23 +3,62 @@ import {
   APIGatewayProxyEventV2,
   APIGatewayProxyStructuredResultV2
 } from 'aws-lambda';
-import { uploadHandler } from './upload';
-import { downloadHandler } from './download';
+import { route, matchRoute } from './router/router';
+import { uploadHandler, CreateUploadUrlRequest } from './upload';
+import { downloadHandler, CreateDownloadUrlRequest } from './download';
 import { getFilesHandler } from './files';
 import { deleteFilesHandler } from './delete';
-import { createMultipartUploadUrlHandler } from './multipart/start';
-import { createMultipartUploadPartUrlHandler } from './multipart/part';
-import { completeMultipartUploadHandler } from './multipart/complete';
-import { route, matchRoute } from './router/router';
+import {
+  createMultipartUploadUrlHandler,
+  CreateMultipartPartUploadRequest
+} from './multipart/start';
+import {
+  createMultipartUploadPartUrlHandler,
+  CreateMultipartPartUrlRequest
+} from './multipart/part';
+import {
+  completeMultipartUploadHandler,
+  CompleteMultipartUploadRequest
+} from './multipart/complete';
 
 const routes = [
-  route('POST', '/upload-urls', uploadHandler),
-  route('POST', '/download-urls', downloadHandler),
-  route('POST', '/multipart-uploads', createMultipartUploadUrlHandler),
-  route('POST', '/multipart-uploads/:uploadId/part-urls', createMultipartUploadPartUrlHandler),
-  route('POST', '/multipart-uploads/:uploadId', completeMultipartUploadHandler),
-  route('GET', '/files', getFilesHandler),
-  route('DELETE', '/files', deleteFilesHandler)
+  route('POST', '/upload-urls', async (event: APIGatewayProxyEventV2) => {
+    const body = toBody<CreateUploadUrlRequest>(event);
+    return uploadHandler(body);
+  }),
+
+  route('POST', '/download-urls', async (event: APIGatewayProxyEventV2) => {
+    const body = toBody<CreateDownloadUrlRequest>(event);
+    return downloadHandler(body);
+  }),
+
+  route('POST', '/multipart-uploads', async (event: APIGatewayProxyEventV2) => {
+    const body = toBody<CreateMultipartPartUploadRequest>(event);
+    return createMultipartUploadUrlHandler(body);
+  }),
+
+  route('POST', '/multipart-uploads/:uploadId/part-urls', async (event: APIGatewayProxyEventV2) => {
+    const body = toBody<CreateMultipartPartUrlRequest>(event);
+    const uploadId = toUploadId(event);
+    return createMultipartUploadPartUrlHandler(body, uploadId);
+  }),
+
+  route('POST', '/multipart-uploads/:uploadId', async (event: APIGatewayProxyEventV2) => {
+    const body = toBody<CompleteMultipartUploadRequest>(event);
+    const uploadId = toUploadId(event);
+    return completeMultipartUploadHandler(body, uploadId);
+  }),
+
+  route('GET', '/files', async (event: APIGatewayProxyEventV2) => {
+    const limit = Number(event.queryStringParameters?.limit ?? 20);
+    const cursor = event.queryStringParameters?.cursor;
+    return getFilesHandler(limit, cursor);
+  }),
+
+  route('DELETE', '/files', async (event: APIGatewayProxyEventV2) => {
+    const key = event.queryStringParameters?.key;
+    return deleteFilesHandler(key);
+  })
 ];
 
 export const handler: APIGatewayProxyHandlerV2 = async (
@@ -29,20 +68,36 @@ export const handler: APIGatewayProxyHandlerV2 = async (
     console.log(`recieved event ${JSON.stringify(event)}`);
     const method = event.requestContext.http.method;
     const path = event.requestContext.http.path;
-
-    const matchedRoute = matchRoute(method, path, routes);
-
-    if (!matchedRoute) {
+    const handler = matchRoute(method, path, routes);
+    if (!handler) {
       return notFound();
     }
-
-    const response = await matchedRoute.handler(event, matchedRoute.params);
-
+    const response = await handler(event);
     return toSuccessResponse(response);
   } catch (err: unknown) {
     return handleError(err);
   }
 };
+
+function toBody<T>(event: APIGatewayProxyEventV2): T {
+  if (!event.body) {
+    throw new Error('Missing event body');
+  }
+
+  const body = JSON.parse(event.body) as T;
+  console.log(`parsed body ${JSON.stringify(body)}`);
+  return body;
+}
+
+function toUploadId(event: APIGatewayProxyEventV2): string {
+  const uploadId = event.pathParameters?.uploadId;
+
+  if (!uploadId) {
+    throw new Error('Missing upload id');
+  }
+
+  return uploadId;
+}
 
 function notFound(): APIGatewayProxyStructuredResultV2 {
   return {

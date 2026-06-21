@@ -1,9 +1,7 @@
 import { CompleteMultipartUploadCommand, CompletedPart } from '@aws-sdk/client-s3';
-import { APIGatewayProxyEventV2 } from 'aws-lambda';
 import { s3, bucket } from '../s3';
-import { pathToUploadId, toBody } from '../common';
 
-type CompleteMultipartUploadRequest = {
+export type CompleteMultipartUploadRequest = {
   key: string;
   parts: CompleteMultipartUploadRequestPart[];
 };
@@ -18,11 +16,9 @@ type CompleteMultipartUploadResponse = {
 };
 
 export async function completeMultipartUploadHandler(
-  event: APIGatewayProxyEventV2,
-  _params: Record<string, string>
+  body: CompleteMultipartUploadRequest,
+  uploadId: string
 ): Promise<CompleteMultipartUploadResponse> {
-  const uploadId = pathToUploadId(event.requestContext.http.path);
-  const body = toBody<CompleteMultipartUploadRequest>(event);
   validate(body);
   const command = new CompleteMultipartUploadCommand({
     Bucket: bucket,

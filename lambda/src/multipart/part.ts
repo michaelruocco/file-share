@@ -1,10 +1,8 @@
 import { UploadPartCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { APIGatewayProxyEventV2 } from 'aws-lambda';
 import { s3, bucket } from '../s3';
-import { pathToUploadId, toBody } from '../common';
 
-type CreateMultipartPartUrlRequest = {
+export type CreateMultipartPartUrlRequest = {
   key: string;
   number: number;
 };
@@ -14,11 +12,9 @@ type CreateMultipartPartUrlResponse = {
 };
 
 export async function createMultipartUploadPartUrlHandler(
-  event: APIGatewayProxyEventV2,
-  _params: Record<string, string>
+  body: CreateMultipartPartUrlRequest,
+  uploadId: string,
 ): Promise<CreateMultipartPartUrlResponse> {
-  const body = toBody<CreateMultipartPartUrlRequest>(event);
-  const uploadId = pathToUploadId(event.requestContext.http.path);
   const command = new UploadPartCommand({
     Bucket: bucket,
     Key: body.key,

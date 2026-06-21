@@ -1,10 +1,8 @@
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { s3, bucket, toObjectKey } from './s3';
-import { toBody } from './common';
-import { APIGatewayProxyEventV2 } from 'aws-lambda';
 
-type CreateUploadUrlRequest = {
+export type CreateUploadUrlRequest = {
   filename: string;
   contentType: string;
 };
@@ -15,10 +13,8 @@ type CreateUploadUrlResponse = {
 };
 
 export async function uploadHandler(
-  event: APIGatewayProxyEventV2,
-  _params: Record<string, string>
+  body: CreateUploadUrlRequest,
 ): Promise<CreateUploadUrlResponse> {
-  const body = toBody<CreateUploadUrlRequest>(event);
   const key = toObjectKey(body.filename);
   const command = toPutObjectCommand(key, body.contentType);
   const options = { expiresIn: 60 * 5 };

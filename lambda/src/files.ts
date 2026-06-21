@@ -1,6 +1,5 @@
 import { _Object, ListObjectsV2Command } from '@aws-sdk/client-s3';
 import { s3, bucket } from './s3';
-import { APIGatewayProxyEventV2 } from 'aws-lambda';
 
 type FileSummary = {
   key: string;
@@ -13,12 +12,7 @@ type GetFilesResponse = {
   nextCursor?: string | undefined;
 };
 
-export async function getFilesHandler(
-  event: APIGatewayProxyEventV2,
-  _params: Record<string, string>
-): Promise<GetFilesResponse> {
-  const limit = Number(event.queryStringParameters?.limit ?? 20);
-  const cursor = event.queryStringParameters?.cursor;
+export async function getFilesHandler(limit: number, cursor?: string): Promise<GetFilesResponse> {
   const command = new ListObjectsV2Command({
     Bucket: bucket,
     MaxKeys: limit,
