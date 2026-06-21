@@ -1,5 +1,5 @@
 resource "aws_apigatewayv2_api" "http_api" {
-  name          = "file-share-api"
+  name = "file-share-api-${var.environment}"
   protocol_type = "HTTP"
 
   cors_configuration {

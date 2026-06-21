@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "file_share_ui" {
-  bucket = "file-share-ui-${var.environment}-${var.aws_region}-${data.aws_caller_identity.current.account_id}"
+  bucket = "file-share-ui-${var.environment}"
 
   force_destroy = true
 
