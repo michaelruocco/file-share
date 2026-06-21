@@ -5,6 +5,7 @@
     "moduleResolution": "NodeNext",
     "esModuleInterop": true,
     "types": ["node", "aws-lambda"],
+    "rootDir": "src",
     "outDir": "dist"
   },
   "include": ["src"]
