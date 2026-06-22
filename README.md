@@ -17,26 +17,56 @@ AWS profile is required to run terraform commands e.g.
 export AWS_PROFILE=local-dev
 ```
 
-once the AWS profile is set up the following commands need to be run from the `/infra` directory:
+Once the AWS profile is set up the following commands need to be run from the `/infra` directory:
+
+Terraform must be initialised along with a bucket to store state. It is recommended
+to enable versioning on the state bucket. The following commands only need to be
+run once during initial setup.
 
 ```bash
-terraform init          # only required for first time set up
-terraform plan          # view changes that will be applied
-terraform apply         # apply changes
+aws s3api create-bucket \
+  --bucket file-share-terraform-state-{unique-identifier} \
+  --region eu-west-2 \
+  --create-bucket-configuration LocationConstraint=eu-west-2
+
+aws s3api put-bucket-versioning \
+  --bucket file-share-terraform-state-{unique-identifier} \
+  --versioning-configuration Status=Enabled
+
+terraform init \
+  -backend-config="bucket=file-share-terraform-state-{unique-identifier}" \
+  -backend-config="region=eu-west-2" \
+  -backend-config="key=dev/app/terraform.tfstate"
 ```
 
-these commands will return output containing details of the api endpoint, bucket names,
-ui url and lambda name
+Note - The state key (`dev/app/terraform.tfstate`) determines where Terraform
+state is stored within the bucket and can be used to separate environments.
+For example:
+
+* mruoc/app/terraform.tfstate
+* dev/app/terraform.tfstate
+* ci/app/terraform.tfstate
+
+To preview and apply infrastructure changes:
 
 ```bash
-api_endpoint = "https://t08qceavmb.execute-api.eu-west-2.amazonaws.com"
-storage_bucket_name = "file-share-storage-dev-eu-west-2-327122349051"
-ui_bucket_name = "file-share-ui-dev-eu-west-2-327122349051"
-ui_url = "dh4unqc8j5ixg.cloudfront.net"
-upload_url_lambda_name = "file-share-upload-dev-eu-west-2-327122349051"
+terraform plan
+terraform apply
 ```
 
-to deploy the front end you need to move back up out of the `/infra` directory, then
+These commands will return output containing details of the api endpoint, bucket names,
+and ui url
+
+```bash
+deployment = {
+  "api_endpoint" = "https://t08qceavmb.execute-api.eu-west-2.amazonaws.com"
+  "storage_bucket_name" = "file-share-storage-dev"
+  "ui_bucket_name" = "file-share-ui-dev"
+  "cloudfront_url" = "dh4unqc8j5ixg.cloudfront.net"
+}
+```
+
+To deploy the front end you need to move back up out of the `/infra` directory, then
 into the `/ui` directory where you can build the ui code with the following commands:
 
 ```bash
@@ -45,14 +75,14 @@ npm install
 npm run build
 ```
 
-then to deploy the ui built ui code you need to run the following, using the
+Then to deploy the ui built ui code you need to run the following, using the
 value of the `ui_bucket_name` variable output from the previous step:
 
 ```bash
 aws s3 sync dist/ s3://{ui_bucket_name} --delete
 ```
 
-then to view the deployed ui you can navigate to the valaue of the `ui_url`
+Then to view the deployed ui you can navigate to the valaue of the `ui_url`
 variable output above from `terraform apply` step i.e `https://dh4unqc8j5ixg.cloudfront.net`
 from the example above.
 
