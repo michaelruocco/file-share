@@ -39,6 +39,10 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            lambda/package-lock.json
+            ui/package-lock.json
 
       - name: Install Lambda dependencies
         working-directory: lambda
@@ -92,3 +96,13 @@ jobs:
           aws cloudfront create-invalidation \
             --distribution-id ${{ fromJson(steps.tf.outputs.deployment).cloudfront_distribution_id }} \
             --paths "/*"
+
+      - name: Deployment Summary
+        run: |
+          echo "## Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Item | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Environment | ${{ inputs.environment }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| API Endpoint | ${{ fromJson(steps.tf.outputs.deployment).api_endpoint }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| UI | https://${{ fromJson(steps.tf.outputs.deployment).cloudfront_domain_name }} |" >> $GITHUB_STEP_SUMMARY
