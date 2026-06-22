@@ -22,6 +22,10 @@ import {
 } from './handlers/multipart/complete';
 
 const routes = [
+  route('GET', '/health', async () => ({
+    status: 'ok'
+  })),
+
   route('POST', '/upload-urls', async (event: APIGatewayProxyEventV2) => {
     const body = toBody<CreateUploadUrlRequest>(event);
     return uploadHandler(body);
