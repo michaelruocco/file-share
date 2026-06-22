@@ -49,8 +49,25 @@ data "aws_iam_policy_document" "github_permissions" {
       "lambda:*",
       "apigateway:*",
       "cloudfront:*",
+      "logs:*",
+
+      "iam:GetRole",
+      "iam:CreateRole",
+      "iam:DeleteRole",
+      "iam:UpdateRole",
       "iam:PassRole",
-      "logs:*"
+
+      "iam:GetOpenIDConnectProvider",
+      "iam:CreateOpenIDConnectProvider",
+      "iam:DeleteOpenIDConnectProvider",
+
+      "iam:AttachRolePolicy",
+      "iam:DetachRolePolicy",
+      "iam:PutRolePolicy",
+      "iam:DeleteRolePolicy",
+      "iam:GetRolePolicy",
+      "iam:ListRolePolicies",
+      "iam:ListAttachedRolePolicies"
     ]
 
     resources = ["*"]
