@@ -103,6 +103,15 @@ export async function getPaginatedFiles(
   }
 }
 
+export async function deleteAllFiles(): Promise<APIResponse> {
+  const api = await createApiContext();
+  try {
+    return await api.delete('/files');
+  } finally {
+    api.dispose();
+  }
+}
+
 export type FileSummary = {
   key: string;
   size: number;

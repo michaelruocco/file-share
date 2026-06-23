@@ -51,7 +51,14 @@ test('get paginated files', async () => {
   const firstFilesResponse = await getPaginatedFiles(1);
   const firstFilesResponseBody = await firstFilesResponse.json();
   const firstFiles = (firstFilesResponseBody.files as FileSummary[]) || [];
-  expect(firstFiles.length).toBe(1);
+  expect
+    .poll(
+      async () => {
+        return firstFiles.length;
+      },
+      { timeout: 1000 }
+    )
+    .toBe(1);
   const firstFileKey = firstFiles[0]!.key;
 
   const cursor = firstFilesResponseBody.nextCursor;

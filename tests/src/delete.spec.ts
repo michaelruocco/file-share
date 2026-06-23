@@ -4,7 +4,8 @@ import {
   createUploadUrl,
   readAndUploadFile,
   getFiles,
-  createApiContext
+  createApiContext,
+  deleteAllFiles
 } from './fixtures';
 import type { FileSummary } from './fixtures';
 
@@ -69,15 +70,6 @@ export async function deleteFile(key: string): Promise<APIResponse> {
   const api = await createApiContext();
   try {
     return await api.delete(`/files?key=${key}`);
-  } finally {
-    api.dispose();
-  }
-}
-
-export async function deleteAllFiles(): Promise<APIResponse> {
-  const api = await createApiContext();
-  try {
-    return await api.delete('/files');
   } finally {
     api.dispose();
   }
