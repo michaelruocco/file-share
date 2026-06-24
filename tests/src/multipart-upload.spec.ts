@@ -1,19 +1,27 @@
 import { test, expect, APIResponse } from '@playwright/test';
 import {
+  generatePrefix,
+  deleteAllFiles,
   largeBinaryFilePath,
   createApiContext,
   doUpload,
   createDownloadUrl,
-  doDownload,
+  doDownload
 } from './fixtures';
 import { readFileSync } from 'fs';
 
-test('multipart upload', async () => {
+test.afterEach(async ({}, testInfo) => {
+  const prefix = generatePrefix(testInfo);
+  await deleteAllFiles(prefix);
+});
+
+test('multipart upload', async ({}, testInfo) => {
   const filePath = largeBinaryFilePath();
   const contentType = 'application/octet-stream';
   const chunks = toChunks(filePath, 5);
 
-  const createMultipartResponse = await createMultipartUpload(filePath, contentType);
+  const prefix = generatePrefix(testInfo);
+  const createMultipartResponse = await createMultipartUpload(filePath, contentType, prefix);
   expect(createMultipartResponse.ok()).toBeTruthy();
   const createMultipartBody = await createMultipartResponse.json();
 
@@ -46,7 +54,9 @@ test('multipart upload', async () => {
     })
   );
 
-  console.log(`completing upload with ${uploadedParts.length} parts`);
+  console.log(
+    `completing upload with ${uploadedParts.length} parts and key ${createMultipartBody.key}`
+  );
   const completeMultipartResponse = await completeMultipartUpload(
     createMultipartBody.uploadId,
     createMultipartBody.key,
@@ -87,12 +97,14 @@ function toChunks(filePath: string, chunkSizeMb: number): Buffer[] {
 
 export async function createMultipartUpload(
   filename: string,
-  contentType: string
+  contentType: string,
+  prefix?: string
 ): Promise<APIResponse> {
   const api = await createApiContext();
   try {
     return await api.post('/multipart-uploads', {
       data: {
+        prefix,
         filename,
         contentType
       }

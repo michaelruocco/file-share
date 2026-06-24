@@ -1,6 +1,10 @@
-import { request, APIRequestContext, APIResponse } from '@playwright/test';
+import { request, APIRequestContext, APIResponse, TestInfo } from '@playwright/test';
 import { readFileSync } from 'fs';
 import * as path from 'path';
+
+export function generatePrefix(testInfo: TestInfo): string {
+  return `playwright/${testInfo.testId}`;
+}
 
 export function textFilePath(): string {
   return path.resolve(__dirname, '..', 'files', 'test-file.txt');
@@ -10,11 +14,16 @@ export function largeBinaryFilePath(): string {
   return path.resolve(__dirname, '..', 'files', 'test-multipart.bin');
 }
 
-export async function createUploadUrl(filename: string, contentType: string): Promise<APIResponse> {
+export async function createUploadUrl(
+  filename: string,
+  contentType: string,
+  prefix?: string
+): Promise<APIResponse> {
   const api = await createApiContext();
   try {
     return await api.post('/upload-urls', {
       data: {
+        prefix,
         filename,
         contentType
       }
@@ -76,10 +85,14 @@ export async function doDownload(downloadUrl: string): Promise<Response> {
   });
 }
 
-export async function getFiles(): Promise<APIResponse> {
+export async function getFiles(prefix?: string): Promise<APIResponse> {
   const api = await createApiContext();
   try {
-    return await api.get('/files');
+    return await api.get('/files', {
+      data: {
+        prefix
+      }
+    });
   } finally {
     api.dispose();
   }
@@ -102,10 +115,14 @@ export async function getPaginatedFiles(params: GetPaginatedFilesParams): Promis
   }
 }
 
-export async function deleteAllFiles(): Promise<APIResponse> {
+export async function deleteAllFiles(prefix?: string): Promise<APIResponse> {
   const api = await createApiContext();
   try {
-    return await api.delete('/files');
+    return await api.delete('/files', {
+      data: {
+        prefix
+      }
+    });
   } finally {
     api.dispose();
   }

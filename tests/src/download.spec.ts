@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 import {
+  generatePrefix,
+  deleteAllFiles,
   textFilePath,
   createUploadUrl,
   createDownloadUrl,
@@ -8,10 +10,16 @@ import {
 } from './fixtures';
 import { readFileSync } from 'fs';
 
-test('basic download', async () => {
+test.afterEach(async ({}, testInfo) => {
+  const prefix = generatePrefix(testInfo);
+  await deleteAllFiles(prefix);
+});
+
+test('basic download', async ({}, testInfo) => {
   const contentType = 'text/plain';
   const filePath = textFilePath();
-  const createUploadUrlResponse = await createUploadUrl(filePath, contentType);
+  const prefix = generatePrefix(testInfo);
+  const createUploadUrlResponse = await createUploadUrl(filePath, contentType, prefix);
   const createUploadUrlBody = await createUploadUrlResponse.json();
   const uploadResponse = await readAndUploadFile(
     createUploadUrlBody.uploadUrl,

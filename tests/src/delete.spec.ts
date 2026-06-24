@@ -1,5 +1,6 @@
 import { test, expect, APIResponse } from '@playwright/test';
 import {
+  generatePrefix,
   textFilePath,
   createUploadUrl,
   readAndUploadFile,
@@ -9,10 +10,16 @@ import {
 } from './fixtures';
 import type { FileSummary } from './fixtures';
 
-test('delete single file', async () => {
+test.afterEach(async ({}, testInfo) => {
+  const prefix = generatePrefix(testInfo);
+  await deleteAllFiles(prefix);
+});
+
+test('delete single file', async ({}, testInfo) => {
   const contentType = 'text/plain';
   const filePath = textFilePath();
-  const createUploadUrlResponse = await createUploadUrl(filePath, contentType);
+  const prefix = generatePrefix(testInfo);
+  const createUploadUrlResponse = await createUploadUrl(filePath, contentType, prefix);
   const createUploadUrlBody = await createUploadUrlResponse.json();
   const uploadResponse = await readAndUploadFile(
     createUploadUrlBody.uploadUrl,
@@ -31,12 +38,13 @@ test('delete single file', async () => {
   expect(updatedFileSummaries.map((file) => file.key)).not.toContain(createUploadUrlBody.key);
 });
 
-test('delete multiple files', async () => {
+test('delete multiple files', async ({}, testInfo) => {
   const uploadedKeys = [];
+  const prefix = generatePrefix(testInfo);
   for (let i = 0; i < 2; i++) {
     const contentType = 'text/plain';
     const filePath = textFilePath();
-    const createUploadUrlResponse = await createUploadUrl(filePath, contentType);
+    const createUploadUrlResponse = await createUploadUrl(filePath, contentType, prefix);
     const createUploadUrlBody = await createUploadUrlResponse.json();
     const uploadResponse = await readAndUploadFile(
       createUploadUrlBody.uploadUrl,
@@ -47,20 +55,20 @@ test('delete multiple files', async () => {
     uploadedKeys.push(createUploadUrlBody.key);
   }
 
-  const fileSummaries = await getFilesSummaries();
+  const fileSummaries = await getFilesSummaries(prefix);
   expect(fileSummaries.map((file) => file.key)).toEqual(expect.arrayContaining(uploadedKeys));
 
-  const deleteResponse = await deleteAllFiles();
+  const deleteResponse = await deleteAllFiles(prefix);
   expect(deleteResponse.ok).toBeTruthy();
 
-  const updatedFileSummaries = await getFilesSummaries();
+  const updatedFileSummaries = await getFilesSummaries(prefix);
   for (const uploadedKey of uploadedKeys) {
     expect(updatedFileSummaries.map((file) => file.key)).not.toContain(uploadedKey);
   }
 });
 
-export async function getFilesSummaries(): Promise<FileSummary[]> {
-  const filesResponse = await getFiles();
+export async function getFilesSummaries(prefix?: string): Promise<FileSummary[]> {
+  const filesResponse = await getFiles(prefix);
   expect(filesResponse.ok()).toBeTruthy();
   const filesResponseBody = await filesResponse.json();
   return filesResponseBody.files as FileSummary[];
