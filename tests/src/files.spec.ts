@@ -33,7 +33,7 @@ test('get files', async () => {
 });
 
 test('get paginated files', async () => {
-  const uploadedKeys = [];
+  const uploadedKeys: string[] = [];
   for (let i = 0; i < 2; i++) {
     const contentType = 'text/plain';
     const filePath = textFilePath();
@@ -48,21 +48,14 @@ test('get paginated files', async () => {
     uploadedKeys.push(createUploadUrlBody.key);
   }
 
-  const firstFilesResponse = await getPaginatedFiles(1);
+  const firstFilesResponse = await getPaginatedFiles({ limit: 1 });
   const firstFilesResponseBody = await firstFilesResponse.json();
   const firstFiles = (firstFilesResponseBody.files as FileSummary[]) || [];
-  expect
-    .poll(
-      async () => {
-        return firstFiles.length;
-      },
-      { timeout: 1000 }
-    )
-    .toBe(1);
+  expect(firstFiles.length).toBe(1);
   const firstFileKey = firstFiles[0]!.key;
 
   const cursor = firstFilesResponseBody.nextCursor;
-  const nextFilesResponse = await getPaginatedFiles(1, cursor);
+  const nextFilesResponse = await getPaginatedFiles({ limit: 1, cursor });
   const nextFilesResponseBody = await nextFilesResponse.json();
   const nextFiles = (nextFilesResponseBody.files as FileSummary[]) || [];
   expect(nextFiles.length).toBe(1);

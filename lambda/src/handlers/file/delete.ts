@@ -6,13 +6,17 @@ import {
 } from '@aws-sdk/client-s3';
 import { s3, bucket } from '../../s3';
 
-export async function deleteFilesHandler(key?: string): Promise<void> {
+export async function deleteFilesHandler(key?: string, prefix?: string): Promise<void> {
+  if (key && prefix) {
+    throw new Error('key and prefix cannot both be specified at the same time');
+  }
+
   if (key) {
     await deleteFile(key);
     return;
   }
 
-  await deleteAllFiles();
+  await deleteAllFiles(prefix);
 }
 
 async function deleteFile(key: string) {
@@ -25,7 +29,7 @@ async function deleteFile(key: string) {
   console.log(`deleted file ${key}`);
 }
 
-async function deleteAllFiles() {
+async function deleteAllFiles(prefix?: string) {
   let deleted = 0;
   let continuationToken: string | undefined = undefined;
 
@@ -33,7 +37,8 @@ async function deleteAllFiles() {
     const response: ListObjectsV2CommandOutput = await s3.send(
       new ListObjectsV2Command({
         Bucket: bucket,
-        ContinuationToken: continuationToken
+        ContinuationToken: continuationToken,
+        Prefix: prefix
       })
     );
 

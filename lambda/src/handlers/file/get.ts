@@ -12,11 +12,16 @@ type GetFilesResponse = {
   nextCursor?: string | undefined;
 };
 
-export async function getFilesHandler(limit: number, cursor?: string): Promise<GetFilesResponse> {
+export async function getFilesHandler(
+  limit: number,
+  cursor?: string,
+  prefix?: string
+): Promise<GetFilesResponse> {
   const command = new ListObjectsV2Command({
     Bucket: bucket,
     MaxKeys: limit,
-    ContinuationToken: cursor
+    ContinuationToken: cursor,
+    Prefix: prefix
   });
   const response = await s3.send(command);
   const files: FileSummary[] = (response.Contents ?? [])

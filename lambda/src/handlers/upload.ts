@@ -3,6 +3,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { s3, bucket, toObjectKey } from '../s3';
 
 export type CreateUploadUrlRequest = {
+  prefix?: string;
   filename: string;
   contentType: string;
 };
@@ -15,7 +16,7 @@ type CreateUploadUrlResponse = {
 export async function uploadHandler(
   body: CreateUploadUrlRequest
 ): Promise<CreateUploadUrlResponse> {
-  const key = toObjectKey(body.filename);
+  const key = toObjectKey(body.filename, body.prefix);
   const command = toPutObjectCommand(key, body.contentType);
   const options = { expiresIn: 60 * 5 };
 
