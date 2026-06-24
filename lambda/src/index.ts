@@ -54,10 +54,12 @@ const routes = [
   }),
 
   route('GET', '/files', async (event: APIGatewayProxyEventV2) => {
-    const limit = Number(event.queryStringParameters?.limit ?? 20);
-    const cursor = event.queryStringParameters?.cursor;
-    const prefix = event.queryStringParameters?.prefix;
-    return getFilesHandler(limit, cursor, prefix);
+    const params = {
+      limit: Number(event.queryStringParameters?.limit ?? 20),
+      cursor: event.queryStringParameters?.cursor,
+      prefix: event.queryStringParameters?.prefix
+    };
+    return getFilesHandler(params);
   }),
 
   route('DELETE', '/files', async (event: APIGatewayProxyEventV2) => {

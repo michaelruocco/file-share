@@ -1,6 +1,12 @@
 import { _Object, ListObjectsV2Command } from '@aws-sdk/client-s3';
 import { s3, bucket } from '../../s3';
 
+type GetFilesParams = {
+  limit: number;
+  cursor?: string | undefined;
+  prefix?: string | undefined;
+};
+
 type FileSummary = {
   key: string;
   size: number;
@@ -12,16 +18,12 @@ type GetFilesResponse = {
   nextCursor?: string | undefined;
 };
 
-export async function getFilesHandler(
-  limit: number,
-  cursor?: string,
-  prefix?: string
-): Promise<GetFilesResponse> {
+export async function getFilesHandler(params: GetFilesParams): Promise<GetFilesResponse> {
   const command = new ListObjectsV2Command({
     Bucket: bucket,
-    MaxKeys: limit,
-    ContinuationToken: cursor,
-    Prefix: prefix
+    MaxKeys: params.limit,
+    ContinuationToken: params.cursor,
+    Prefix: params.prefix
   });
   const response = await s3.send(command);
   const files: FileSummary[] = (response.Contents ?? [])
