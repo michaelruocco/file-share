@@ -61,9 +61,11 @@ const routes = [
   }),
 
   route('DELETE', '/files', async (event: APIGatewayProxyEventV2) => {
-    const key = event.queryStringParameters?.key;
-    const prefix = event.queryStringParameters?.prefix;
-    return deleteFilesHandler(key, prefix);
+    const params = {
+      key: event.queryStringParameters?.key,
+      prefix: event.queryStringParameters?.prefix
+    };
+    return deleteFilesHandler(params);
   })
 ];
 

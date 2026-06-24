@@ -6,17 +6,21 @@ import {
 } from '@aws-sdk/client-s3';
 import { s3, bucket } from '../../s3';
 
-export async function deleteFilesHandler(key?: string, prefix?: string): Promise<void> {
-  if (key && prefix) {
+type DeleteParams = {
+  key?: string | undefined;
+  prefix?: string | undefined;
+};
+export async function deleteFilesHandler(params: DeleteParams): Promise<void> {
+  if (params.key && params.prefix) {
     throw new Error('key and prefix cannot both be specified at the same time');
   }
 
-  if (key) {
-    await deleteFile(key);
+  if (params.key) {
+    await deleteFile(params.key);
     return;
   }
 
-  await deleteAllFiles(prefix);
+  await deleteAllFiles(params.prefix);
 }
 
 async function deleteFile(key: string) {
